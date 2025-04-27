@@ -1,0 +1,7 @@
+<apex:component >
+    <footer class="footer">
+      <div class="container">
+        <p class="text-center p-3">Copyright© SKY365 CO, All rights reserved.</p>
+      </div>
+    </footer>
+</apex:component>

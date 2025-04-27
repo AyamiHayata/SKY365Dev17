@@ -1,0 +1,9 @@
+<apex:page standardController="Quote__c" extensions="CreateContractController" lightningStylesheets="true" action="{!initAction}">
+
+  <apex:form >
+    <apex:pageMessages />
+    <apex:commandButton value="契約画面を表示" action="{!moveContractAction}" rendered="{!contract.Id <> null}"/>
+    <apex:commandButton value="戻る" action="{!cancel}"/>
+  </apex:form>
+
+</apex:page>

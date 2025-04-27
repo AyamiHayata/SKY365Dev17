@@ -1,0 +1,35 @@
+<apex:component >
+  <apex:attribute name="title" description="タイトル" type="String" required="true"/>
+  <apex:attribute name="message" description="表示メッセージ" type="String" required="true"/>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"></meta>
+    <title>{!title}</title>
+    <c:CoodleHeadInfo />
+  </head>
+  <body>
+    <div class="container-fluid p-0">
+      <nav class="navbar navbar-expand-lg">
+        <div class="container m-auto">
+          <a class="navbar-brand" href="#">
+            <apex:image url="{!$Resource.skycoodle_header}" width="200" />
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="container-fluid" id="navbarNav">
+          </div>
+        </div>
+      </nav>
+    </div>
+    <div class="container-fluid p-5" style="background-color:#368FE9;">
+      <div class="container m-auto p-5 rounded" style="background-color:#DDDDDD;">
+        <div class="row">
+          <div class="col-12 text-center">
+            <p>{!message}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <c:CommunityFooter />
+  </body>
+</apex:component>

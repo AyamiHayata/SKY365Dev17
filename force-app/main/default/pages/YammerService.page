@@ -1,0 +1,3 @@
+<apex:page standardController="DailyReport__c" extensions="YammerServiceController" action="{!initAction}">
+    <apex:pageMessages id="error"/>
+</apex:page>

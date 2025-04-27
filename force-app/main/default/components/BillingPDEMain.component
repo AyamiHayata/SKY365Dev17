@@ -1,0 +1,123 @@
+<apex:component >
+  <apex:attribute name="page" description="ページ判定" type="String" required="true"/>
+  <apex:attribute name="billingHeader" description="請求ヘッダ情報" type="BillingHeader__c" required="false"/>
+  <apex:attribute name="b" description="請求情報" type="Billing__c" required="false"/>
+  <apex:attribute name="idx" description="請求ヘッダ情報" type="Integer" required="false"/>
+  <apex:attribute name="bList" description="請求情報" type="Billing__c[]" required="false"/>
+  <apex:attribute name="billPostalCode" description="請求郵便番号" type="String" required="false"/>
+  <apex:attribute name="billAddress" description="請求住所" type="String" required="false"/>
+  <apex:attribute name="billAddress2" description="請求住所2" type="String" required="false"/>
+  <apex:attribute name="maxPage" description="最大ページ" type="Integer" required="false"/>
+  <apex:attribute name="deptPostalCode" description="部署郵便番号" type="String" required="false"/>
+  <apex:attribute name="deptAddress" description="部署住所" type="String" required="false"/>
+  <apex:attribute name="deptAddress2" description="部署住所2" type="String" required="false"/>
+  <apex:attribute name="deptTel" description="部署TEL" type="String" required="false"/>
+  <apex:attribute name="deptFax" description="部署FAX" type="String" required="false"/>
+  <apex:attribute name="noteList" description="備考リスト" type="String[]" required="false"/>
+  <apex:attribute name="no" description="NO" type="Integer" required="false"/>
+  <apex:attribute name="bankingInfo" description="口座情報" type="Banking_Info__mdt" required="false"/>
+  <apex:attribute name="paymentCondition" description="お支払い情報" type="String" required="false"/>
+
+  <!--請求ヘッダ情報出力 1ページ目のみ-->
+  <apex:outputPanel rendered="{!IF(page=='first', true, false)}">
+    <br></br>
+      <div id="parent">
+        <apex:outputPanel styleClass="CompanySeal" rendered="{!IF(billingHeader.ApprovalStatus__c=='approved',true,false)}"><apex:image url="{!$Resource.CompanySeal}/CompanySeal.png" width="90"/></apex:outputPanel>
+        <table class="non-border" cols="6">
+          <thead>
+            <tr>
+              <th width="72%"></th>
+              <th width="28%"></th>
+            </tr>
+          </thead>
+          <tr>
+            <td></td>
+            <td rowspan="4" align="right" class="companyLogoTd">
+              <apex:image url="{!$Resource.sky365Logo}" width="114" />
+            </td>
+          </tr>
+          <tr>
+            <td  style="font-size:14pt;">{!IF(billingHeader.BillDestination__c != '', billingHeader.BillDestination__c, billingHeader.BillingAccount__r.Name)}　{!$Label.BILLING_PDF_YOU}</td>
+          </tr>
+          <tr>
+            <td></td>
+          </tr>
+          <tr>
+            <td>{!$Label.BILLING_HEADER_SENTENCE}</td>
+          </tr>
+          <tr>
+            <td>
+              <h2 style="display:block; text-align:left; border-bottom: 2px solid black;">{!$ObjectType.Quote__c.Fields.Name.Label}：{!billingHeader.BillNameForPDF__c}</h2>
+              <h2 style="display:block; text-align:left; border-bottom: 2px solid black;">{!$Label.BILLING_PDF_TOTAL_AMOUNT}：
+                <apex:outputText value="{0,number,￥###,###,###}">
+                  <apex:param value="{!billingHeader.TotalAmountIncludingTax__c}" />
+                </apex:outputText>
+              </h2>
+            </td>
+            <td style="text-align:right;">
+              {!deptAddress}{!deptAddress2}<br/><br/>
+              {!$Label.PDF_COMPANY_NAME}<br/>
+              {!deptTel}
+            </td>
+          </tr>
+        </table>
+      </div>
+      <br></br>
+      <br></br>
+    </apex:outputPanel>
+
+
+    <!--請求-->
+    <apex:outputPanel rendered="{!IF(page=='detail', true, false)}">
+      <table class="border-table" cols="3">
+        <thead>
+          <tr>
+            <th width="39%">{!$ObjectType.Billing__c.Fields.Name.Label}</th>
+            <th width="8%">{!$ObjectType.BillingDetail__c.Fields.Quantity__c.Label}</th>
+            <th width="8%">{!$ObjectType.BillingDetail__c.Fields.Unit__c.Label}</th>
+            <th width="15%">{!$ObjectType.BillingDetail__c.Fields.Amount__c.Label}</th>
+            <!-- 請求書レイアウト改修 2023/7/19 kikuchi -->    
+            <!--<th width="15%">{!$ObjectType.Billing__c.Fields.TotalTaxAmount__c.Label}</th>-->
+            <th width="15%">※ は非課税対象</th>
+            <!-- 請求書レイアウト改修 2023/7/19 kikuchi -->    
+            <th width="15%">{!$ObjectType.Billing__c.Fields.Remarks__c.Label}</th>
+          </tr>
+        </thead>
+        <apex:repeat value="{!bList}" var="b">
+          <tr class="detail-tr">
+            <td><apex:outputText value="{!b.Name}" escape="false"/></td>
+            <td class="right-td">
+              <apex:outputText rendered="{!IF(b.Name<>'', true, false)}">1</apex:outputText>
+            </td>
+            <td class="right-td">
+              <apex:outputText rendered="{!IF(b.Name<>'', true, false)}">式</apex:outputText>
+            </td>    
+            <td class="right-td">
+              <apex:outputText value="{0,number,###,###,###}" >
+                <apex:param value="{!b.TotalBillingAmount__c}" />
+              </apex:outputText>
+            </td>
+            <td class="center-td">
+            <!-- 請求書レイアウト改修 2023/7/19 kikuchi -->
+            <!--
+              <apex:outputText value="{0,number,###,###,###}">
+                <apex:param value="{!b.TotalTaxAmount__c}"/>
+              </apex:outputText>
+            -->
+            <apex:outputText value="{!IF(b.TaxType__c=='noTax','※','')}"></apex:outputText>
+            <!-- 請求書レイアウト改修 2023/7/19 kikuchi --> 
+            </td>
+            <td><apex:outputText value="{!b.Remarks__c}" escape="false"/></td>
+          </tr>
+        </apex:repeat>
+        <!--合計欄-->
+        <apex:outputPanel rendered="{!IF(idx==maxPage,true,false)}">
+          <c:BillingPDEFooter rtrOutput="last" rtrInfo="{!billingHeader}" remarksList="{!noteList}" bankingInfo="{!bankingInfo}" paymentCondition="{!paymentCondition}"/>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!IF(idx<maxPage,true,false)}">
+          <c:BillingPDEFooter rtrOutput="next" rtrInfo="{!billingHeader}" remarksList="{!noteList}" bankingInfo="{!bankingInfo}" paymentCondition="{!paymentCondition}"/>
+        </apex:outputPanel>
+        <br></br>
+      </table>
+    </apex:outputPanel>
+</apex:component>

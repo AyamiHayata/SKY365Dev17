@@ -1,0 +1,231 @@
+<apex:page controller="BillingSearchController" lightningStylesheets="true" action="{!initAction}" readOnly="true" showHeader="true">
+
+  <style>
+    .cmnTbl {
+      width: 100%;
+      border-collapse: collapse;
+    }
+  </style>
+
+  <apex:form id="main">
+
+    <apex:sectionHeader title="請求検索"/>
+      
+    <apex:pageBlock id="conditionBlock" title="検索条件">
+
+      <apex:pageBlockButtons location="bottom">
+        <apex:commandButton value="検索" action="{!searchAction}" reRender="resultBlock"/>
+      </apex:pageBlockButtons>
+
+      <!--内部ユーザ側請求検索画面-->
+      <apex:pageBlockSection columns="2" rendered="{!NOT(loginUserDetail.IsPortalEnabled)}">
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="請求書発行日"/>
+          <apex:outputPanel >
+            <table class="cmnTbl">
+              <tr>
+                <td style="width:20%">
+                  <apex:selectList value="{!searchCondYear}" size="1" style="min-width:100%;">
+                    <apex:selectOptions value="{!yearOptions}"/>
+                  </apex:selectList>
+                </td>
+                <td style="width:20%">
+                  <apex:selectList value="{!searchCondMonth}" size="1" style="min-width:100%;">
+                    <apex:selectOptions value="{!monthOptions}"/>
+                  </apex:selectList>
+                </td>
+                <td style="width:20%">
+                  <apex:selectList value="{!searchCondDay}" size="1" style="min-width:100%;">
+                    <apex:selectOptions value="{!dayOptions}"/>
+                  </apex:selectList>
+                </td>
+              </tr>
+            </table>
+          </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+        <apex:inputField value="{!searchCondBillingHeader.ApprovalStatus__c}"/>
+        <apex:inputField value="{!searchCondBillingHeader.SearchBillingAccount__c}"/>
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="契約"/>
+          <apex:inputField value="{!searchCondBilling.Contract__c}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="請求先部署"/>
+          <apex:outputPanel >
+            <apex:inputText value="{!searchBillingDepartment}"/>
+          </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+
+      
+
+        <apex:inputField value="{!searchCondBilling.Account__c}"/>
+        <!--<apex:pageBlockSectionItem/>-->
+
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="請求金額（税込）"/>
+          <apex:outputPanel >
+            <apex:inputText value="{!searchTotalAmountIncludingTax}"/>
+            <div>※ 「請求金額（税込）」は請求番号が同じもので合計した金額を検索します。</div>
+          </apex:outputPanel>
+          
+        </apex:pageBlockSectionItem>  
+
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="請求書送付"/>
+          <apex:outputPanel >
+            <apex:selectList value="{!searchCondInvoiceSending}" size="1">
+              <apex:selectOptions value="{!invoiceSendingOptions}"/>
+            </apex:selectList>
+          </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem />
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="入金確認"/>
+          <apex:outputPanel >
+            <apex:selectList value="{!searchCondDeposited}" size="1">
+              <apex:selectOptions value="{!depositedOptions}"/>
+            </apex:selectList>
+          </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+      </apex:pageBlockSection>
+      
+      <!--取引先ポータル側検索条件-->
+      <apex:pageBlockSection columns="2" rendered="{!loginUserDetail.IsPortalEnabled}">
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="請求年月"/>
+          <apex:outputPanel >
+            <table class="cmnTbl">
+              <tr>
+                <td style="width:65%">
+                  <apex:selectList value="{!searchCondYear}" size="1" style="min-width:100%;">
+                    <apex:selectOptions value="{!yearOptions}"/>
+                  </apex:selectList>
+                </td>
+                <td>
+                  <apex:selectList value="{!searchCondMonth}" size="1" style="min-width:100%;">
+                    <apex:selectOptions value="{!monthOptions}"/>
+                  </apex:selectList>
+                </td>
+              </tr>
+            </table>
+          </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem />
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="請求先"/>
+          <apex:outputPanel >
+            <apex:outputLabel value="{!loginUserDetail.Account.Name}"/>
+          </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="請求先部署"/>
+          <apex:outputPanel >
+            <apex:inputText value="{!portalUserDepartment}"/>
+          </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+      </apex:pageBlockSection>
+
+    </apex:pageBlock>
+
+    <apex:pageMessages />
+
+    <apex:pageBlock id="resultBlock" title="請求情報">
+      <apex:pageMessages />
+      <apex:outputPanel layout="block" style="overflow:auto;height:400px;" rendered="{!NOT(loginUserDetail.IsPortalEnabled)}">
+        <apex:pageBlockTable value="{!billings}" var="billing" style="margin-top:15px;" id="detailTbl">
+          <apex:column >
+            <apex:facet name="header">請求番号</apex:facet>
+            <apex:outputField value="{!billing.BillingHeader__r.BillingNumber__c}"/>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">請求件名</apex:facet>
+            <a href="/{!billing.BillingHeader__c}" target="_blank">
+              <apex:outputText value="{!billing.BillingHeader__r.Name}"/>
+            </a>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">請求詳細</apex:facet>
+            <a href="/{!billing.Id}" target="_blank">
+              <apex:outputText value="{!billing.Name}"/>
+            </a>
+          </apex:column>
+          <apex:column >
+            <!--
+            <apex:facet name="header">請求年月</apex:facet>
+            <apex:outputField value="{!billing.BillingHeader__r.BillingYearMonth__c}"/>
+            -->
+            <apex:facet name="header">請求書発行日</apex:facet>
+            <apex:outputField value="{!billing.BillingHeader__r.InvoiceOutputDate__c}"/>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">請求先</apex:facet>
+            <a href="/{!billing.BillingHeader__r.BillingAccount__c}" target="_blank">
+              <apex:outputText value="{!billing.BillingHeader__r.BillingAccount__r.Name}"/>
+            </a>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">請求先部署</apex:facet>
+            <apex:outputField value="{!billing.BillingHeader__r.BillingDepartment__c}"/>
+          </apex:column>
+          <apex:column >
+            <!-- <apex:facet name="header">取引先</apex:facet> -->
+            <apex:facet name="header">委託元顧客名</apex:facet>
+            <a href="/{!billing.Account__c}" target="_blank">
+              <apex:outputText value="{!billing.Account__r.Name}"/>
+            </a>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">承認状況</apex:facet>
+            <apex:outputField value="{!billing.BillingHeader__r.ApprovalStatus__c}"/>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">請求金額（税込）</apex:facet>
+            <apex:outputField value="{!billing.TotalAmountIncludingTax__c}"/>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">請求書送付</apex:facet>
+            <apex:outputField value="{!billing.BillingHeader__r.IsInvoiceSending__c}"/>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">入金確認</apex:facet>
+            <apex:outputField value="{!billing.BillingHeader__r.IsDeposited__c}"/>
+          </apex:column>
+        </apex:pageBlockTable>
+      </apex:outputPanel>
+
+      <apex:outputPanel layout="block" style="overflow:auto;height:400px;" rendered="{!loginUserDetail.IsPortalEnabled}">
+        <apex:pageBlockTable value="{!billingHeaders}" var="billing" style="margin-top:15px;" id="detailPortalTbl">
+          <apex:column >
+            <apex:facet name="header">請求番号</apex:facet>
+            <apex:outputField value="{!billing.BillingNumber__c}"/>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">請求件名</apex:facet>
+            <a href="/{!billing.Id}" target="_blank">
+              <apex:outputText value="{!billing.Name}"/>
+            </a>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">請求年月</apex:facet>
+            <apex:outputField value="{!billing.BillingYearMonth__c}"/>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">請求先</apex:facet>
+            <a href="/{!billing.BillingAccount__c}" target="_blank">
+              <apex:outputText value="{!billing.BillingAccount__r.Name}"/>
+            </a>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">請求先部署</apex:facet>
+            <apex:outputField value="{!billing.BillingDepartment__c}"/>
+          </apex:column>
+          <apex:column >
+            <apex:facet name="header">請求金額（税込）</apex:facet>
+            <apex:outputField value="{!billing.TotalAmountIncludingTax__c}"/>
+          </apex:column>
+        </apex:pageBlockTable>
+      </apex:outputPanel>
+    </apex:pageBlock>
+
+  </apex:form>
+</apex:page>

@@ -1,0 +1,30 @@
+<apex:page standardController="Constitution_Common__c" extensions="OperationListDatatableControllerVF" lightningStylesheets="true">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $(".bPageBlock").css("background-color","aliceblue");
+        $(".bPageBlock").css("border-color","avender");
+        $(".dataCol").css("border-bottom","1px solid #c0c0c0");
+    });
+    </script>
+    <style type="text/css">
+        .redColor {background-color:#FFCCCC !important;}
+        .red {background-color:#FF0000 !important;}     
+    </style>
+    <apex:pageBlock title="対応一覧">
+
+      <apex:pageBlockTable value="{!operationList}" var="oList" >
+         <apex:column styleClass="{! If(oList.name=="特別対応", 'red', '') }">
+             <apex:outputLink value="{!URLFOR('/' + oList.Id)}">{!oList.name}</apex:outputLink>
+         </apex:column> 
+         <apex:column value="{!oList.BeforeFlag__c}" styleClass="{! If(oList.AllHostFlag__c, 'redColor', '') }"/>
+         <apex:column value="{!oList.InProgressFlag__c}" styleClass="{! If(oList.AllHostFlag__c, 'redColor', '') }"/>
+         <apex:column value="{!oList.EndedFlag__c}" styleClass="{! If(oList.AllHostFlag__c, 'redColor', '') }"/>
+         <apex:column value="{!oList.RepetitionDate__c}" styleClass="{! If(oList.AllHostFlag__c, 'redColor', '') }"/>
+         <apex:column value="{!oList.Host__c}" styleClass="{! If(oList.AllHostFlag__c, 'redColor', '') }"/>
+         <apex:column value="{!oList.Alert__c}" styleClass="{! If(oList.AllHostFlag__c, 'redColor', '') }"/>
+      </apex:pageBlockTable>
+   
+   </apex:pageBlock>
+   <apex:detail relatedList="true" title="false" inlineEdit="true"/>
+</apex:page>

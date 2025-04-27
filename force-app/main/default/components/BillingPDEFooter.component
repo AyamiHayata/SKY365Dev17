@@ -1,0 +1,70 @@
+<apex:component >
+  <apex:attribute name="rtrOutput" description="合計出力" type="String" required="true"/>
+  <apex:attribute name="rtrInfo" description="合計情報" type="BillingHeader__c" required="true"/>
+  <apex:attribute name="remarksList" description="備考" type="String[]" required="false"/>
+  <apex:attribute name="bankingInfo" description="口座情報" type="Banking_Info__mdt" required="false"/>
+  <apex:attribute name="paymentCondition" description="お支払い条件" type="String" required="false"/>
+  <div>
+    <apex:outputPanel rendered="{!IF(rtrOutput=='last',true,false)}">
+      <br></br>
+      <table class="non-border" cols='5'>
+        <thead>
+          <tr>
+            <th width="15%"></th>
+            <th width="45%"></th>
+            <th width="10%"></th>
+            <th width="15%"></th>
+            <th width="15%"></th>
+          </tr>
+        </thead>
+        <tr>
+          <td class="td-line">{!$Label.BILLING_PAYEE_TITLE}</td>
+          <td class="td-line">{!bankingInfo.BankName__c} {!bankingInfo.BranchName__c} {!bankingInfo.AccountType__c}：{!bankingInfo.AccountNumber__c}</td>
+          <td></td>
+          <td class="right-td">{!$Label.QUOTE_PDF_TOTAL_AMOUNT_TAX_RATES}</td>
+          <td class="right-td">
+            <apex:outputText value="{0,number,###,###,###}">
+              <apex:param value="{!rtrInfo.TotalBillingAmount__c}" />
+            </apex:outputText>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-line">{!$ObjectType.Banking_Info__mdt.Fields.AccountHolder__c.Label}</td>
+          <td class="td-line">{!bankingInfo.AccountHolder__c}</td>
+          <td></td>
+          <td class="right-td">{!$Label.QUOTE_PDF_TOTAL_TAX_TAX_RATES}</td>
+          <td class="right-td">
+            <apex:outputText value="{0,number,###,###,###}">
+              <apex:param value="{!rtrInfo.TotalTaxAmount2__c}" />
+            </apex:outputText>
+          </td>
+        </tr>
+        <tr>
+          <td class="td-line">{!$ObjectType.Contract__c.Fields.PaymentCondition__c.Label}</td>
+          <td class="td-line">{!paymentCondition} {!$Label.BILLING_PAYMENT_MESSAGE}</td>
+          <td></td>
+          <td class="right-td">{!$Label.QUOTE_PDF_TOTAL_AMOUNT_IN_TAX_TAX_RATES}</td>
+          <td class="right-td">
+            <apex:outputText value="{0,number,###,###,###}">
+              <apex:param value="{!rtrInfo.TotalAmountIncludingTax__c}" />
+            </apex:outputText>
+          </td>
+        </tr>
+      </table>
+      <br></br>
+      <table class="tbl-outer">
+        <tr>
+          <td>【備考】</td>
+        </tr>
+        <apex:repeat value="{!remarksList}" var="rl">
+          <tr>
+            <td><apex:outputText value="{!rl}" escape="false"/></td>
+          </tr>
+        </apex:repeat>
+      </table>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!IF(rtrOutput=='next',true,false)}">
+    <span style="float: right">{!$Label.BILLING_PDF_NEXT_PAGE}</span>
+    </apex:outputPanel>
+  </div>
+</apex:component>

@@ -1,0 +1,72 @@
+<apex:page controller="MVPVoteController" action="{!init}" showHeader="true" lightningStylesheets="true">
+  <head>
+    <title>トップ</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <style>
+    .wrap{
+    width: 100%;
+    box-sizing: border-box;
+    padding:100px;
+  }
+  table {
+    width: 100%;
+  }
+  td {
+    text-align: center;
+    vertical-align:top;
+  }
+  textarea{
+      width: 500px;
+      height: 100px;
+  }     
+  body {
+    background-image: url(/resource/1673936692000/aozora);
+    background-repeat: repeat;
+    background-size: 100%;
+    }
+  </style>
+    <script type="text/javascript">
+      // 初期表示
+      $(document).ready(function(){
+        $('[id$=mlktp]').hide();
+      });      
+    </script>
+  </head>
+  <body>
+    <apex:pageMessages />    
+    <p class="wrap" style="text-align:center;"><font size="7">{!halfPeriodStr} MVP投票</font></p>
+    <p style="text-align:center;"><font size="5">社員同士で行うMVP投票です。</font></p>
+    <p style="text-align:center;"><font size="5">この半年で、成長した、頑張った、助けられたと感じたメンバーに感謝の意を込めて</font></p>
+    <p style="text-align:center;"><font size="5">ぜひ投票をしてください。票を多く集めたメンバー上位には表彰があります。</font></p>
+
+    <div>
+      <p style="text-align:center;">&nbsp;</p>
+      <p style="text-align:center;"><font size="3" >■ このMVP投票は、3月に実施し、翌月に開票・集計し表彰をします。 ■</font></p>
+      <p style="text-align:center;"><font size="3" >■ １回の投票は最大３名まで投票できます。（同一メンバーへ多投票も可能です。） ■</font></p>
+      <p style="text-align:center;"><font size="3" >■ 自分自身への投票と、部長以上への投票は無効票です。 ■</font></p>
+    </div>
+    
+    <apex:form id="formId">
+
+      <div class="wrap" style="text-align:center;">
+        <table boder="1">
+          <apex:repeat value="{!votes}" var="vote">
+            <tr><td colspan="2">&nbsp;</td></tr>
+            <tr><td colspan="2">&nbsp;</td></tr>
+            <tr style="background-color: rgb(186, 217, 230);">
+              <td width="40%"><b>投票者</b></td>
+              <td width="60%" style="text-align:left"><b>投票理由</b></td>
+            </tr>
+            <tr><td colspan="2">&nbsp;</td></tr>
+            <tr>
+              <td><apex:inputField value="{!vote.VoteUser__c}" label="aaa" id="VoteUser"/></td>
+              <td><apex:inputField value="{!vote.Cause__c}" id="Cause"/></td>
+            </tr>
+          </apex:repeat>      
+        </table>
+        <p style="text-align:center;">&nbsp;</p>
+        <apex:commandButton action="{!save}" style="text-align:center;" value="投票する"/>
+      </div>
+    </apex:form>        
+  </body>
+</apex:page>

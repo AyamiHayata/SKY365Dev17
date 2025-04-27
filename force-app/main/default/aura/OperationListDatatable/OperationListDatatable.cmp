@@ -1,0 +1,23 @@
+<aura:component controller="OperationListDatatableController" implements="flexipage:availableForAllPageTypes,force:hasRecordId">
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="opeList"  type="OperationList__c[]" />
+    <aura:attribute name="mycolumns" type="List"/>
+    
+    <aura:attribute name="sortedBy" type="String" default="OngoingFlag__c"/>
+    <aura:attribute name="sortedDirection" type="String" default="desc"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.fetchOpe}"/>
+    
+    <lightning:tabset selectedTabId="operationlist">
+        <lightning:tab label="対応一覧" id="operationlist">
+            <lightning:datatable data="{! v.opeList }"
+                                 columns="{! v.mycolumns }"
+                                 keyField="id"
+                                 hideCheckboxColumn="true"
+                                     
+                                 onsort="{!c.updateColumnSorting}"
+                                 sortedBy="{!v.sortedBy}"  
+                                 sortedDirection="{!v.sortedDirection}"/>
+        </lightning:tab>
+    </lightning:tabset> 
+</aura:component>

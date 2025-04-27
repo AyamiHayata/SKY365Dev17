@@ -1,0 +1,302 @@
+<apex:component >
+  <apex:attribute name="page" description="ページ判定" type="String" required="true"/>
+  <apex:attribute name="quote" description="見積情報" type="Quote__c" required="false"/>
+  <apex:attribute name="qd" description="見積明細情報" type="QuoteDetail__c" required="false"/>
+  <apex:attribute name="idx" description="見積情報" type="Integer" required="false"/>
+  <apex:attribute name="qdList" description="見積明細情報" type="QuoteDetail__c[]" required="false"/>
+  <apex:attribute name="billPostalCode" description="請求郵便番号" type="String" required="false"/>
+  <apex:attribute name="billAddress" description="請求住所" type="String" required="false"/>
+  <apex:attribute name="billAddress2" description="請求住所2" type="String" required="false"/>
+  <apex:attribute name="maxPage" description="最大ページ" type="Integer" required="false"/>
+  <apex:attribute name="detailPage" description="明細ページ数" type="Integer" required="false"/> <!--2021.12.20 hayata add-->
+  <apex:attribute name="deptPostalCode" description="部署郵便番号" type="String" required="false"/>
+  <apex:attribute name="deptAddress" description="部署住所" type="String" required="false"/>
+  <apex:attribute name="deptAddress2" description="部署住所2" type="String" required="false"/>
+  <apex:attribute name="deptTel" description="部署TEL" type="String" required="false"/>
+  <apex:attribute name="deptFax" description="部署FAX" type="String" required="false"/>
+  <apex:attribute name="markResponsible" description="責任者" type="String" required="false"/>
+  <apex:attribute name="markManager" description="管理者" type="String" required="false"/>
+  <apex:attribute name="markSalesOwner" description="担当者" type="String" required="false"/>
+  <apex:attribute name="noteList" description="備考リスト" type="String[]" required="false"/>
+  <apex:attribute name="assumedWorkContentList" description="想定作業内容リスト" type="String[]" required="false"/>
+  <apex:attribute name="deliverablesList" description="納品物リスト" type="String[]" required="false"/>
+
+  <apex:attribute name="assumedWorkAddContentList" description="想定作業追記内容リスト" type="String[]" required="false"/> <!--2021.10.28 add-->
+
+  <!--見積情報出力 1ページ目のみ-->
+  <apex:outputPanel rendered="{!IF(page=='first', true, false)}">
+    <!--<br></br>-->
+      <div id="parent">
+        <apex:outputPanel styleClass="CompanySeal" rendered="{!IF(quote.ApprovalStatus__c=='approved',true,false)}"><apex:image url="{!$Resource.CompanySeal}/CompanySeal.png" width="90"/></apex:outputPanel>
+        <table class="non-border" cols="6">
+          <thead>
+            <tr>
+              <th width="2%"></th>
+              <th width="48%"></th>
+              <th width="8%"></th>
+              <th width="42%"></th>
+            </tr>
+          </thead>
+          <tr>
+            <td></td>
+            <td>{!billPostalCode}</td>
+            <td></td>
+            <td rowspan="4" align="right" class="companyLogoTd">
+              <apex:image url="{!$Resource.sky365Logo}" width="114" />
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>{!billAddress}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>{!billAddress2}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="font-bold" rowspan="2">{!quote.BillAccount__r.Name}　{!$Label.QUOTE_PDF_YOU}</td>
+            <td></td>
+            <td style="font-size:10.5pt;">{!$Label.PDF_COMPANY_NAME}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td>{!$Label.QUOTE_PDF_USER}{!quote.QuoteUser__r.Name}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>{!IF(!ISBLANK(quote.BillingContact__r.Name), quote.BillingContact__r.Name + '　' +  $Label.QUOTE_PDF_SAMA, '')}</td>
+            <td></td>
+            <td>{!deptPostalCode}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{!deptAddress}{!deptAddress2}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{!deptTel}</td>
+          </tr>
+        </table>
+      </div>
+      <!--<br></br>-->
+      <table class="non-border" cols="6">
+        <thead>
+          <tr>
+            <th width="10%"></th>
+            <th width="40%"></th>
+            <th width="20%"></th>
+            <th width="10%"></th>
+            <th width="10%"></th>
+            <th width="10%"></th>
+          </tr>
+        </thead>
+        <tr>
+          <td class="border-silver-td">{!$ObjectType.Quote__c.Fields.ExpirationDate__c.Label}</td>
+          <td class="border-td">{!quote.ExpirationDate__c}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <!-- 課題No19 期間を出力 -->
+        <tr>
+          <td class="border-silver-td">{!$ObjectType.Quote__c.Fields.QuoteTerm__c.Label}</td>
+          <td class="border-td">{!quote.QuoteTerm__c}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <td class="border-silver-td">{!$ObjectType.Quote__c.Fields.PaymentCondition__c.Label}</td>
+          <td class="border-td">{!quote.PaymentCondition__c}</td>
+          <td>&nbsp;</td>
+          <td class="border-center-td" rowspan="3">
+            <apex:outputPanel rendered="{!IF(markResponsible<>null,true,false)}"><apex:image url="{!$Resource.stamps}/{!markResponsible}" width="40"/></apex:outputPanel>
+          </td>
+          <td class="border-center-td" rowspan="3">
+            <apex:outputPanel rendered="{!IF(markManager<>null,true,false)}"><apex:image url="{!$Resource.stamps}/{!markManager}" width="40"/></apex:outputPanel>
+          </td>
+          <td class="border-center-td" rowspan="3">
+            <apex:outputPanel rendered="{!IF(markSalesOwner<>null,true,false)}"><apex:image url="{!$Resource.stamps}/{!markSalesOwner}" width="40"/></apex:outputPanel>
+          </td>
+        </tr>
+        <tr>
+          <td class="border-silver-td" rowspan="2">{!$ObjectType.Quote__c.Fields.Other__c.Label}</td>
+          <td class="border-td" rowspan="2">{!quote.Other__c}</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+        </tr>
+      </table>
+      <!-- 課題No19 期間を出力 -->
+      <!--<br></br>-->
+
+      <h2 style="display:block; text-align:left; border-bottom: 2px solid black; width:100%;">{!$ObjectType.Quote__c.Fields.Name.Label}：{!quote.Name}</h2>
+      <h2 style="display:block; text-align:left; border-bottom: 2px solid black; width:100%;">{!$Label.QUOTE_PDF_TOTAL_AMOUNT_IN_TAX}
+        <apex:outputText value="{0,number,###,###,###}">
+          <apex:param value="{!quote.TotalAmountIncludingTax__c}" />
+        </apex:outputText>
+      </h2>
+
+    </apex:outputPanel>
+
+
+    <!--見積明細-->
+    <apex:outputPanel rendered="{!IF(page=='detail', true, false)}">
+      <table class="border-table" cols="7">
+        <thead>
+          <tr>
+            <th width="5%">{!$ObjectType.QuoteDetail__c.Fields.No__c.Label}</th>
+            <th width="12%">{!$ObjectType.QuoteDetail__c.Fields.LargeType__c.Label}</th>
+            <th width="40%">{!$ObjectType.QuoteDetail__c.Fields.ProductNameText__c.Label}</th>
+            <th width="12%">{!$ObjectType.QuoteDetail__c.Fields.DetailType__c.Label}</th>
+            <th width="8%">{!$ObjectType.QuoteDetail__c.Fields.Quantity__c.Label}</th>
+            <th width="7%">{!$ObjectType.QuoteDetail__c.Fields.Unit__c.Label}</th>
+            <th width="12%">{!$ObjectType.QuoteDetail__c.Fields.UnitPrice__c.Label}</th>
+            <th width="14%">{!$ObjectType.QuoteDetail__c.Fields.Amount__c.Label}</th>
+          </tr>
+        </thead>
+        <apex:repeat value="{!qdList}" var="qd">
+          <tr class="detail-tr">
+            <td align="right"><apex:outputText value="{!IF(qd.TaxType__c=='noTax','※','')}{!qd.No__c}" escape="false"/></td>
+            <td><apex:outputText value="{!qd.LargeType__c}" escape="false"/></td>
+            <td><apex:outputText value="{!qd.ProductNameText__c}" escape="false"/></td>
+            <td><apex:outputText value="{!qd.DetailType__c}" escape="false"/></td>
+            <td class="right-td">
+              <!-- 課題No20 少数点以下を出力 -->
+              <apex:outputText value="{0,number,###,###,##0.##}" >
+                <apex:param value="{!qd.Quantity__c}" />
+              </apex:outputText>
+            </td>
+            <td align="center"><apex:outputText value="{!qd.Unit__c}" escape="false"/></td>
+            <td class="right-td">
+              <apex:outputText value="{0,number,###,###,###}">
+                <apex:param value="{!qd.UnitPrice__c}"/>
+              </apex:outputText>
+            </td>
+            <td class="right-td">
+              <apex:outputText value="{0,number,###,###,###}" >
+                <apex:param value="{!qd.Amount__c}"/>
+              </apex:outputText>
+            </td>
+          </tr>
+        </apex:repeat>
+        <!--合計欄-->
+        <!-- 2021.12.20 comment out
+        <apex:outputPanel rendered="{!IF(idx==maxPage,true,false)}">
+          <c:QuotePDETaxRates rtrOutput="last" rtrInfo="{!quote}" />
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!IF(idx==maxPage-1 && assumedWorkAddContentList.size==0,true,false)}">
+          <c:QuotePDETaxRates rtrOutput="last" rtrInfo="{!quote}" />
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!IF(idx<maxPage,true,false)}">
+          <c:QuotePDETaxRates rtrOutput="next" rtrInfo="{!quote}" />
+        </apex:outputPanel>
+        -->
+        <!--2021.12.20 add start-->
+        <apex:outputPanel rendered="{!IF(idx==detailPage ,true,false)}">
+          <c:QuotePDETaxRates rtrOutput="last" rtrInfo="{!quote}" />
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!IF(idx<detailPage,true,false)}">
+          <c:QuotePDETaxRates rtrOutput="next" rtrInfo="{!quote}" />
+        </apex:outputPanel>
+        <!--2021.12.20 add end-->
+
+        <br></br>
+      </table>
+    </apex:outputPanel>
+
+    <!--前提条件・備考-->
+    <apex:outputPanel rendered="{!IF(page=='note', true, false)}">
+
+        <!--ヘッダ出力-->
+        <!-- <c:QuotePDEHeader headerInfo="{!quote}" curPage="{!maxPage + 1}" maxPage="{!maxPage + 1}"/> -->
+        <c:QuotePDEHeader headerInfo="{!quote}" curPage="{!idx + 1}" maxPage="{!maxPage + 1}"/>
+        <br></br>
+        <table class="border-table">
+          <thead>
+            <tr>
+              <th>{!$ObjectType.Quote__c.Fields.Note__c.Label}</th>
+            </tr>
+          </thead>
+        </table>
+        <table class="frame-table">
+          <apex:repeat value="{!noteList}" var="rl">
+            <tr>
+              <td><apex:outputText value="{!rl}" escape="false"/></td>
+            </tr>
+          </apex:repeat>
+        </table>
+        <br></br>
+        <table class="border-table">
+          <thead>
+            <tr>
+              <th>{!$ObjectType.Quote__c.Fields.Deliverables__c.Label}</th>
+            </tr>
+          </thead>
+        </table>
+        <table class="frame-table">
+          <apex:repeat value="{!deliverablesList}" var="rl">
+            <tr>
+              <td><apex:outputText value="{!rl}" escape="false"/></td>
+            </tr>
+          </apex:repeat>
+        </table>
+        <br></br>
+        <table class="border-table">
+            <tr>
+              <th>{!$ObjectType.Quote__c.Fields.AssumedWorkContent__c.Label}</th>
+            </tr>
+        </table>
+        <table class="frame-table">
+          <apex:repeat value="{!assumedWorkContentList}" var="rl">
+            <tr>
+              <td><apex:outputText value="{!rl}" escape="false"/></td>
+            </tr>
+          </apex:repeat>
+        </table>
+        <br></br>
+
+    </apex:outputPanel>
+
+    <!--想定作業内容追記2021.10.28 add-->
+    <apex:outputPanel rendered="{!IF(page=='noteadd', true, false)}">
+
+        <!--ヘッダ出力-->
+        <c:QuotePDEHeader headerInfo="{!quote}" curPage="{!maxPage + 1}" maxPage="{!maxPage + 1}"/>
+        <br></br>
+        <table class="border-table">
+            <tr>
+              <th>{!$ObjectType.Quote__c.Fields.AssumedWorkContentAdd__c.Label}</th>
+            </tr>
+        </table>
+        <table class="frame-table">
+          <apex:repeat value="{!assumedWorkAddContentList}" var="rl">
+            <tr>
+              <td><apex:outputText value="{!rl}" escape="false"/></td>
+            </tr>
+          </apex:repeat>
+        </table>
+        <br></br>
+
+    </apex:outputPanel>
+</apex:component>

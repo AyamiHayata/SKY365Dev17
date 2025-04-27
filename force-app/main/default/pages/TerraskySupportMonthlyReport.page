@@ -1,0 +1,143 @@
+<apex:page controller="TerraskySupportMonthlyReportController" lightningStylesheets="true"  showHeader="false">
+
+<head>
+  <style>
+  </style>
+  <script type = "text/javascript">
+  </script>            
+</head>
+
+<body id ="body">
+<apex:form id="form">  
+  <apex:sectionHeader title="{!createYear}年{!createMonth}月度 {!productType} 月次報告書"/>
+  <apex:pageBlock >
+    <apex:pageBlockSection >
+    <analytics:reportChart developerName="new_report_eqc" filter="[{column:'TerraskySupport__c.ProductType2__c',operator:'equals',value:'{!Product}'}]" size="large"/>
+    <analytics:reportChart developerName="new_report_DSU" filter="[{column:'TerraskySupport__c.ProductType2__c',operator:'equals',value:'{!Product}'}]" size="large"/>
+  </apex:pageBlockSection>
+  </apex:pageBlock>  
+  <br/>
+  <apex:pageBlock >
+
+  <table border="1" style="margin-left:10px; margin-right:10px; width: 90%; height: 200px;">
+    <tbody>
+      <tr>
+        <td rowspan="2" style="background-color:#bfefdf; width:15%;" ><apex:outputText value="対応ケース総数"/></td><td rowspan="2" align="right" style="width: 5%;"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!totalCaseCount}"/></p></td>
+        <td style="background-color:#bfefdf; width: 15%;"><apex:outputText value="製品開発問い合わせ数"/></td><td align="right" style="width: 5%;"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!escalationCount}"/></p></td>
+        <td style="background-color:#bfefdf; width: 15%;"><apex:outputText value="当月問い合わせ対応時間"/></td><td align="right" style="width: 5%;"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!totalWorkTimeThisMonth}"/></p></td>
+        <td style="background-color:#bfefdf; width: 15%;"><apex:outputText value="{!ProductLine1.name}"/></td><td align="right" style="width: 5%;"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine1.value}"/></p></td>
+      </tr>
+      <tr>
+        <!--<td></td><td></td>-->
+        <td style="background-color:#bfefdf;"><apex:outputText value="④うち妥当と考えられる問い合わせ起票数"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!escalationValidCount}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="継続問い合わせ対応時間"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!workTimeLastMonth}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="{!ProductLine2.name}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine2.value}"/></p></td>
+      </tr>
+      <tr>
+        <td style="background-color:#bfefdf;"><apex:outputText value="ユーザ確認中"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!userPenddingCount}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="SKY３６５自己解決数"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!selfCloseCount}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="手順修正・打ち合わせ等"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!workTimeEtc}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="{!ProductLine3.name}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine3.value}"/></p></td>
+      </tr>
+      <tr>
+        <td style="background-color:#bfefdf;"><apex:outputText value="クローズ"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!closeCount}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="テラスカイ対応数"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!tettaskyTotalCaseCount}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="合計対応総時間"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!totalSumworkTime}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="{!ProductLine4.name}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine4.value}"/></p></td>
+      </tr>
+      <tr>
+        <td style="background-color:#bfefdf;"><apex:outputText value="Tier2対応中"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!makerPenddingCount}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="ケース総数に対する自己解決率"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!selfCloseRate}%"/></p></td>
+        <td style="background-color:#bfefdf;"></td><td></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="{!ProductLine5.name}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine5.value}"/></p></td>
+      </tr>
+      <tr>
+        <td style="background-color:#bfefdf;"><apex:outputText value="営業確認中"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!salesPenddingCount}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="ケース総数に対する④を含めた解決率"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!selfCloseInValidRate}%"/></p></td>
+        <td style="background-color:#bfefdf;"></td><td></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="{!ProductLine6.name}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine6.value}"/></p></td>
+      </tr>
+      <tr>
+        <td style="background-color:#bfefdf;"></td><td></td>  
+        <td style="background-color:#bfefdf;"><apex:outputText value="ケース総数に対するソリューションHit率"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!totalCaseCoountInSolutionHitRate}%"/></p></td>
+        <td style="background-color:#bfefdf;"></td><td></td>  
+        <td style="background-color:#bfefdf;"><apex:outputText value="{!ProductLine7.name}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine7.value}"/></p></td>
+      </tr>
+      <tr>
+        <td style="background-color:#bfefdf;"></td><td></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="自己解決数に対するソリューションHit率"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!selfCloseInSolutionHitRate}%"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="{!ProductLine10.name}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine10.value}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="{!ProductLine8.name}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine8.value}"/></p></td>
+      </tr>
+      <tr>
+        <td style="background-color:#bfefdf;"></td><td></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="初回応答率（２営業日以内）"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!firstContactRate}%"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="{!ProductLine11.name}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine11.value}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="{!ProductLine9.name}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine9.value}"/></p></td>
+      </tr>
+      <tr>
+        <td style="background-color:#bfefdf;"><apex:outputText value="長期化ケース数（当月クローズ）" rendered="{!isLongTimeCaseCountView}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!longTimeCaseCount}" rendered="{!isLongTimeCaseCountView}"/></p></td>
+        <td style="background-color:#bfefdf;"></td><td></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="{!ProductLine12.name}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine12.value}"/></p></td>
+        <td style="background-color:#bfefdf;"><apex:outputText value="{!ProductLine13.name}"/></td><td align="right"><p style="margin-right:5px;margin-bottom:0px;"><apex:outputText value="{!ProductLine13.value}"/></p></td>
+      </tr>
+    </tbody>
+  </table>
+
+    <apex:pageBlockButtons >
+      <apex:commandButton value="戻る" action="{!back}"/>
+    </apex:pageBlockButtons>
+
+  </apex:pageBlock>
+
+  <br/>
+  <apex:pageBlock >
+    <apex:pageBlockTable value="{!caseList}" var="cList" >
+       <apex:column value="{!cList.CaseNo__c}" style="{!if(cList.SolutionType__c = "エスカレーション", 'background-color:#bfefdf;', 'background-color:white;')}"/>
+       <apex:column value="{!cList.CaseCreateDate__c}" style="{!if(cList.SolutionType__c = "エスカレーション", 'background-color:#bfefdf;', 'background-color:white;')}"/>
+       <!--<apex:column value="{!cList.PersonName__c}" style="{!if(cList.InquiryID__c != null, 'background-color:#bfefdf;', 'background-color:white;')}"/>-->
+       <apex:column value="{!cList.ProductType__c}" style="{!if(cList.SolutionType__c = "エスカレーション", 'background-color:#bfefdf;', 'background-color:white;')}"/>
+       <apex:column value="{!cList.ProductEdition__c}" style="{!if(cList.SolutionType__c = "エスカレーション", 'background-color:#bfefdf;', 'background-color:white;')}"/>
+       <apex:column value="{!cList.AccountName__c}" style="{!if(cList.SolutionType__c = "エスカレーション", 'background-color:#bfefdf;', 'background-color:white;')}"/>
+       <apex:column value="{!cList.ContactName__c}" style="{!if(cList.SolutionType__c = "エスカレーション", 'background-color:#bfefdf;', 'background-color:white;')}"/>
+       <apex:column value="{!cList.Name}" style="{!if(cList.SolutionType__c = "エスカレーション", 'background-color:#bfefdf;', 'background-color:white;')}"/>
+       <apex:column value="{!cList.Status__c}" style="{!if(cList.SolutionType__c = "エスカレーション", 'background-color:#bfefdf;', 'background-color:white;')} width:80px"/>
+       <apex:column value="{!cList.InquiryID__c}" style="{!if(cList.SolutionType__c = "エスカレーション", 'background-color:#bfefdf;', 'background-color:white;')}"/>
+       <apex:column value="{!cList.Solution__c}" style="{!if(cList.SolutionType__c = "エスカレーション", 'background-color:#bfefdf;', 'background-color:white;')}"/>
+       <apex:column headervalue="自己解決種別" style="{!if(cList.SolutionType__c = "エスカレーション", 'background-color:#bfefdf;', 'background-color:white;')}" rendered="{!if(caseList.size > 0, true, false)}">
+         <apex:inputField value="{!cList.SolutionType__c}" id="SolutionType"/>
+       </apex:column>
+       <apex:column value="{!cList.WorkTime__c}" style="{!if(cList.SolutionType__c = "エスカレーション", 'background-color:#bfefdf;', 'background-color:white;')}"/>
+       <!--<apex:column value="{!cList.FixTime__c}" style="{!if(cList.InquiryID__c != null, 'background-color:#bfefdf;', 'background-color:white;')}"/>-->
+       <!--
+       <apex:column headervalue="稼働時間">
+         <apex:inputField value="{!cList.WorkTime__c}" id="WorkTime"/>
+       </apex:column>
+      -->
+    </apex:pageBlockTable>
+    <apex:pageblockbuttons >
+      <apex:commandButton action="{!save}" value="保存"/>
+    </apex:pageblockbuttons> 
+  </apex:pageBlock>
+  <apex:pageBlock title="11日超過ケース（当月クローズ）" rendered="{!isLongTimeCaseListView}">
+    <apex:pageBlockTable value="{!longTimeCaseList}" var="lList" >
+      <apex:column value="{!lList.CaseNo__c}" style="{!if(lList.InquiryID__c != null, 'background-color:#bfefdf;', 'background-color:white;')}"/>
+      <apex:column value="{!lList.CaseCreateDate__c}" style="{!if(lList.InquiryID__c != null, 'background-color:#bfefdf;', 'background-color:white;')}"/>
+      <apex:column value="{!lList.MailUpdateDate__c}" style="{!if(lList.InquiryID__c != null, 'background-color:#bfefdf;', 'background-color:white;')}"/>
+      <apex:column value="{!lList.AccountName__c}" style="{!if(lList.InquiryID__c != null, 'background-color:#bfefdf;', 'background-color:white;')}"/>
+      <apex:column value="{!lList.ContactName__c}" style="{!if(lList.InquiryID__c != null, 'background-color:#bfefdf;', 'background-color:white;')}"/>
+      <apex:column value="{!lList.Name}" style="{!if(lList.InquiryID__c != null, 'background-color:#bfefdf;', 'background-color:white;')}"/>
+      <apex:column value="{!lList.CaseResponseDate__c}" style="{!if(lList.InquiryID__c != null, 'background-color:#bfefdf;', 'background-color:white;')}"/>
+      <apex:column headervalue="長期理由" style="{!if(lList.InquiryID__c != null, 'background-color:#bfefdf;', 'background-color:white;')}">
+        <apex:inputField value="{!lList.LongTimeReason__c}" id="SolutionType"/>
+      </apex:column>
+    </apex:pageBlockTable>
+    <apex:pageblockbuttons >
+      <apex:commandButton action="{!save}" value="保存"/>
+    </apex:pageblockbuttons>       
+  </apex:pageBlock> 
+</apex:form> 
+</body>
+         
+
+</apex:page>

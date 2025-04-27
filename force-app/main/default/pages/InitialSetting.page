@@ -1,0 +1,39 @@
+<apex:page controller="InitialSettingController" action="{!initAction}" showHeader="true" lightningStylesheets="true">
+    <apex:form >
+        <table>
+            <tr>
+                <td><apex:image url="{!$Resource.initsetting}"/></td>
+            </tr>
+        </table>
+        <div style="margin-left:30px;">
+            <table border="1" width="500px">
+                <thead>
+                <tr height="40px" style="background-color: #fafad2;">
+                    <th width="50%"><p align="center">連携アプリケーション</p></th>
+                    <th><p align="center">状態</p></th>
+                    <th><p align="center">操作</p></th>                
+                </tr>
+                </thead>
+                <tbody>
+                <tr height="40px">
+                    <td>Toggl</td>
+                    <td align="center"><apex:image url="{!if(isTRegistred == true, $Resource.btnrenkei, $Resource.btnmirenkei)}"/></td>
+                    
+                    <td align="center"><apex:commandButton action="{!togglLink}" value="連携" id="togglLink"/></td>                
+                </tr>
+                <tr height="40px">
+                    <td>Yammer</td>
+                    <td align="center"><apex:image url="{!if(isYRegistred == true, $Resource.btnrenkei, $Resource.btnmirenkei)}"/></td>
+                    <td align="center"><apex:commandButton action="{!yammerLink}" value="連携" id="yammerLink"/></td>                
+                </tr>
+                </tbody>
+            </table>
+            
+            <table width="500px">
+                <tr height="40px">
+                    <td align="center"><apex:commandButton action="{!back}" value="日報へ" id="back"/></td> 
+                </tr>
+            </table>
+        </div>
+    </apex:form>
+</apex:page>

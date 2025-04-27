@@ -1,0 +1,93 @@
+<apex:page controller="TerraskySupportWeeklyReportController" lightningStylesheets="true"  showHeader="false" action="{!execute}">
+<head>
+    <style>
+    </style>
+    <script type = "text/javascript">
+    </script>            
+</head>
+<body id ="body">
+    <apex:form id="form">
+        <apex:sectionHeader title="サポートデスク週次進捗報告 {!weekStart} - {!weekEnd}"/>
+        <apex:pageBlock >
+        <apex:pageBlockSection >
+          <analytics:reportChart developerName="new_report_BAM" size="large"/>
+          <analytics:reportChart developerName="new_report_mxG" size="large"/>
+        </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock title="【SkyVisualEditor サポート】 新規問い合わせ {!sveList.size}件　当月累計 {!sveMonthTotal}件">
+            <apex:pageBlockTable value="{!sveList}" var="sList" >
+               <apex:column value="{!sList.CaseNo__c}" style="background-color:#d9f6f7; width: 200px;"/>
+               <apex:column value="{!sList.ProductType__c}" style="background-color:#d9f6f7; width: 200px;"/>
+               <apex:column value="{!sList.Name}" style="background-color:#d9f6f7;"/>   
+            </apex:pageBlockTable>
+            <br/><textarea id="story" name="story" rows="4" cols="120">【コメント】
+　・ 今週の連絡事項はありません。　</textarea>
+        </apex:pageBlock>   
+
+        <apex:pageBlock title="【Salesforce ライセンス サポート】 新規問い合わせ {!sfdcList.size}件　当月累計 {!sfdcMonthTotal}件">
+            <apex:pageBlockTable value="{!sfdcList}" var="sfList" >
+               <apex:column value="{!sfList.CaseNo__c}" style="background-color:#d9f6f7; width: 200px;"/>
+               <apex:column value="{!sfList.ProductType__c}" style="background-color:#d9f6f7; width: 200px;"/>
+               <apex:column value="{!sfList.Name}" style="background-color:#d9f6f7;"/>   
+            </apex:pageBlockTable>
+            <br/><textarea id="story" name="story" rows="4" cols="120">【コメント】
+　・ 今週の連絡事項はありません。　</textarea>
+        </apex:pageBlock>   
+
+        <apex:pageBlock title="【GLOVIA OM ライセンス サポート】 新規問い合わせ {!gomList.size}件　当月累計 {!gomMonthTotal}件">
+            <apex:pageBlockTable value="{!gomList}" var="gList" >
+               <apex:column value="{!gList.CaseNo__c}" style="background-color:#d9f6f7; width: 200px;"/>
+               <apex:column value="{!gList.ProductType__c}" style="background-color:#d9f6f7; width: 200px;"/>
+               <apex:column value="{!gList.Name}" style="background-color:#d9f6f7;"/>   
+            </apex:pageBlockTable>
+            <br/><textarea id="story" name="story" rows="4" cols="120">【コメント】
+　・ 今週の連絡事項はありません。　</textarea>
+        </apex:pageBlock>   
+
+        <apex:pageBlock title="【 OMLINE サポート】 新規問い合わせ {!omlineList.size}件　当月累計 {!omlineMonthTotal}">
+            <apex:pageBlockTable value="{!omlineList}" var="oList" >
+               <apex:column value="{!oList.CaseNo__c}" style="background-color:#d9f6f7; width: 200px;"/>
+               <apex:column value="{!oList.ProductType__c}" style="background-color:#d9f6f7; width: 200px;"/>
+               <apex:column value="{!oList.Name}" style="background-color:#d9f6f7;"/>   
+            </apex:pageBlockTable>
+            <br/><textarea id="story" name="story" rows="4" cols="120">【コメント】
+　・ 今週の連絡事項はありません。　</textarea>
+        </apex:pageBlock>   
+
+        <apex:pageBlock title="【連携製品 サポート】 新規問い合わせ {!dcsList.size}件　当月累計 {!dcsMonthTotal}件">
+            <apex:pageBlockTable value="{!dcsList}" var="dList" >
+               <apex:column value="{!dList.CaseNo__c}" style="background-color:#d9f6f7; width: 200px;"/>
+               <apex:column value="{!dList.ProductType__c}" style="background-color:#d9f6f7; width: 200px;"/>
+               <apex:column value="{!dList.Name}" style="background-color:#d9f6f7;"/>   
+            </apex:pageBlockTable>
+            <br/><textarea id="story" name="story" rows="4" cols="120">【コメント】
+　・ 今週の連絡事項はありません。　</textarea>
+        </apex:pageBlock>   
+
+        <apex:pageBlock title="【mitoco　サポート】 新規問い合わせ {!mitocoList.size}件　当月累計 {!mitocoMonthTotal}件">
+            <apex:pageBlockTable value="{!mitocoList}" var="mList" >
+               <apex:column value="{!mList.CaseNo__c}" style="background-color:#d9f6f7; width: 200px;"/>
+               <apex:column value="{!mList.ProductType__c}" style="background-color:#d9f6f7; width: 200px;"/>
+               <apex:column value="{!mList.Name}" style="background-color:#d9f6f7;"/>   
+            </apex:pageBlockTable>
+            <br/><textarea id="story" name="story" rows="4" cols="120">【コメント】
+　・ 今週の連絡事項はありません。　</textarea>
+        </apex:pageBlock>   
+
+        <apex:pageBlock title="【血液製剤】 新規問い合わせ"> 
+            <apex:pageBlockTable value="{!jbpoList}" var="jList" >
+              <apex:column headerValue="バックログID" style="width: 200px;">
+                <input type="text" name="productId" value="" style="background-color:#d9f6f7; width: 200px;"/>
+              </apex:column>
+              <apex:column headerValue="件名">
+                <input type="text" name="productId" value="" style="background-color:#d9f6f7; width: 600px;"/>
+              </apex:column>
+            </apex:pageBlockTable>
+            <br/><textarea id="story" name="story" rows="4" cols="120">【コメント】
+　・ 新規問い合わせ０件 今週の連絡事項はありません。</textarea>
+        </apex:pageBlock>   
+
+
+    </apex:form>           
+</body>
+</apex:page>

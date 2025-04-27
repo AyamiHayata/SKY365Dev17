@@ -1,0 +1,22 @@
+<apex:page controller="SalesforceToTogglController" action="{!initAction}" showHeader="true" lightningStylesheets="true">
+    <apex:form >
+        <table>
+            <tr>
+                <td colspan="2"><apex:image url="{!$Resource.togglimg}"/></td>
+                <td></td>
+            </tr>
+            <tr height="40px">
+                <td align="center" width="150px"><p align="center">ToggleログインID</p></td>
+                <td align="center" width="150px"><apex:inputText required="true" id="loginid" value="{!loginid}" label="loginid" size="30"/></td>
+            </tr>
+            <tr height="40px">
+                <td align="center"><p align="center">Togglパスワード</p></td>
+                <td align="center"><apex:inputSecret required="true" id="password" value="{!password}" label="password" size="30"/></td>    
+            </tr>
+            <tr height="40px">
+                <td colspan="2" align="center"><apex:commandButton action="{!regist}" value="連携" id="regist"/></td>
+                <td></td>
+            </tr>
+        </table>
+    </apex:form>
+</apex:page>

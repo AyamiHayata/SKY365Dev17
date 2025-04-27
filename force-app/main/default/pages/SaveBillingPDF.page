@@ -1,0 +1,8 @@
+<apex:page standardController="BillingHeader__c" extensions="SaveBillingPDFController" lightningStylesheets="true" action="{!initAction}">
+
+  <apex:form >
+    <apex:pageMessages />
+    <apex:commandButton value="戻る" action="{!cancel}"/>
+  </apex:form>
+
+</apex:page>

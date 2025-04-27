@@ -1,0 +1,81 @@
+<apex:page docType="html-5.0" standardController="NotifyInfo__c" extensions="NotifyInfoEditController" lightningStylesheets="true" standardStylesheets="false" action="{!initAction}" cache="false">
+  <head>
+    <title>連絡先情報</title>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+      <script src="https://ajaxzip3.github.io/ajaxzip3.js" charset="UTF-8"></script>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+      <style>
+        .table_header{
+          border-bottom: 1px solid #000;
+        }
+        .row_bottom_border{
+          border-bottom: 1px solid #888888ba ;
+        }
+        a[id*="mail_chgrireki_report"] {
+          display       : inline-block;
+          border-radius : 5%;          /* 角丸       */
+          font-size     : 14pt;        /* 文字サイズ */
+          text-align    : center;      /* 文字位置   */
+          cursor        : pointer;     /* カーソル   */
+          padding       : 10px 21px;   /* 余白       */
+          background    : #368fe9;     /* 背景色     */
+          color         : #ffffff;     /* 文字色     */
+          line-height   : 1em;         /* 1行の高さ  */
+          transition    : .3s;         /* なめらか変化 */
+          box-shadow    : 1px 1px 3px #666666;  /* 影の設定 */
+          border        : 2px solid #368fe9;    /* 枠の指定 */
+          text-decoration: none;
+          border: none;
+        }
+        a[id*="mail_chgrireki_report"]:hover {
+          box-shadow    : none;        /* カーソル時の影消去 */
+          color         : #368fe9;     /* 背景色     */
+          background    : #ffffff;     /* 文字色     */
+        }
+      </style>
+  </head>
+  <body>
+    <script>
+      $(document).ready(function(){
+        $("[id$='edit']").click(function(){
+          return check();
+        });
+        $("[id$='delete']").click(function(){
+          return delcheck();
+        });
+      });
+      // ダブルクリック防止
+      //var isSave = false;
+      function check(){
+        if($("[id$='pastoneId']").val()){
+          var result = window.confirm('Office,Zendeskに未連携のデータがあります。編集しますか？');
+          if(result) return true;
+          return false;
+        }
+        return true;
+      }
+      function delcheck(){
+        var result = window.confirm('この連絡先情報を削除しますか？');
+        if(result) return true;
+        return false;
+      }
+      </script>
+    <apex:form id="formID">
+      <apex:pageMessages />
+      <div class="container-fluid p-5" style="background-color:rgb(54, 143, 233);padding: 2rem;">
+        <div class="container m-auto p-5 rounded" style="background-color:#DDDDDD;">
+          <c:ViewNotifyInfo companyName="{!companyName}" constitutionInfo="{!constitutionInfo}" notifyInfo="{!notifyInfo}" dayMap="{!dayMap}" operatorFlg="{!operatorFlg}"/>
+          <div class="mt-3 px-4 text-center">
+            <apex:inputHidden value="{!notifyinfo.PastOne__c}" id="pastoneId"/>
+            <apex:commandButton action="{!edit}" value="編集" styleClass="btn btn-secondary me-1 px-3" id="edit"/>
+            <apex:commandButton action="{!executeOfficeZendeskAPI}" value="Office・Zendesk連携" styleClass="btn btn-secondary me-1 px-3" />
+            <apex:commandButton action="{!executeeZendeskAPI}" value="ZenDesk連携" styleClass="btn btn-secondary me-1 px-3" />
+            <apex:commandButton action="{!delete}" value="削除" styleClass="btn btn-secondary me-1 px-3" id="delete"/>
+          </div>
+        </div>
+      </div>
+      
+    </apex:form>
+  </body>
+</apex:page>

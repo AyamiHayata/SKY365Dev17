@@ -1,0 +1,9 @@
+<apex:page standardController="Contract__c" extensions="CreateBillingController" lightningStylesheets="true" action="{!initAction}">
+
+  <apex:form >
+    <apex:pageMessages />
+    <apex:commandButton value="請求ヘッダ画面を表示" action="{!moveBillingHeaderAction}" rendered="{!sameBillingHeader <> null}"/>
+    <apex:commandButton value="戻る" action="{!cancel}"/>
+  </apex:form>
+
+</apex:page>

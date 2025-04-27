@@ -1,0 +1,87 @@
+<apex:page docType="html-5.0" showHeader="false" sidebar="false" id="Page" standardStylesheets="false" controller="ChangeAddressController" title="連絡先情報" action="{!initAction}" cache="false">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"></meta>
+    <title>連絡先情報</title>
+    <c:CoodleHeadInfo />
+    <!-- <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js" integrity="sha256-xH4q8N0pEzrZMaRmd7gQVcTZiFei+HfRTBPJ1OGXC0k=" crossorigin="anonymous"></script> -->
+  </head>
+  <body>
+    <script type="text/javascript">
+      // 初期表示
+      $(document).ready(function(){
+        var a = $.cookie("BrowserId");
+        $("[id$='sessionid']").val(a);
+        $("[id$='formID']").validationEngine('attach',{promptPosition:"topRight:-40"});
+        $("[id$='shinsei']").click(function(){
+          // alert('実行');
+          if($("[id$='formID']") != null
+          && $("[id$='formID']").validationEngine != null
+          && !$("[id$='formID']").validationEngine("validate")){
+            return false;
+          }
+          return check();
+        });
+      });
+      // ダブルクリック防止
+      var isSave = false;
+      function check(){
+        if (!isSave) {
+            isSave = true;
+            // return true;
+        }
+        return isSave;
+      } 
+
+    function NoSubmit(e){
+    if(!e) var e = window.event;
+        if(e.keyCode==13){
+            if(e.srcElement.type!='submit' && e.srcElement.type!='textarea'){
+                if(e.srcElement.type!='image'){
+                    return false;
+                }
+             }
+        }
+    }
+    </script> 
+      
+    <apex:form id="formID" onkeydown="return NoSubmit(event);">
+      <c:CommunityHeader code="{!code}" name="{!name}" selectPage="renrakusaki"/>
+      <apex:inputHidden id="sessionid" value="{!sessionid}" />
+      <div class="container-fluid p-5" style="background-color:rgb(54, 143, 233);padding: 2rem;" id="pageall">
+        <div class="container m-auto p-5 rounded" style="background-color:#DDDDDD;">
+          <apex:pageMessages />
+          <c:ChangeNotifyInfo companyName="{!companyName}" constitutionInfo="{!constitutionInfo}" notifyInfo="{!notifyInfo}"  dayMap="{!dayMap}" operatorFlg="{!operatorFlg}"/>
+          <div class="row">
+            <div class="col-lg-12 col-md-12" style="padding: 1rem;">
+              <h3 class="text-left">メールでのご連絡先</h3>
+              <p>
+                全ての障害はメールでご連絡します。また、弊社からのお知らせや対応調整についてもメールでご連絡します。
+                <br/>ご連絡先を記載ください。
+              </p>
+              <p>
+                また、弊社チケットシステム（Zendesk）のログインにはお客様のメールアドレスを利用します。
+                <br/>メールでのご連絡はせずに、チケットシステムへのログインのみに使用するアドレスを記載いただくことも出来ます。
+              </p>
+              <p class="text-danger">
+                弊社ではFromアドレスでお客様の特定を行いますので
+                <br/>記載のないメールアドレスからの新規お問い合わせはお受けすることができかねます。
+                <br/>メールでのご連絡不要でお問い合わせのみされるメールアドレスがある場合は必ずご記載ください。
+              </p>
+              <c:ChangeNotifyInfoOtherList notifyInfo="{!notifyInfo}" operatorFlg="{!operatorFlg}" othernameList="{!originalOtherNameList}" otheremailList="{!originalEmailList}"/>
+              <apex:outputPanel rendered="{!IF(constitutionInfo.ChargeOption__c,true,false)}">
+                <c:ChangeNotifyInfoOtherOptionList notifyInfo="{!notifyInfo}" operatorFlg="{!operatorFlg}" othernameList="{!originalOtherNameList}" otheremailList="{!originalEmailList}"/>
+              </apex:outputPanel>
+            </div>
+          </div>
+          <div class="mt-4">
+            <apex:outputPanel rendered="{!IF(notifyInfo.Status__c<>'受付' && notifyInfo.Status__c<>'処理中',true,false)}">
+              <apex:commandButton action="{!save}" value="申請" styleClass="btn btn-secondary me-1 px-3" id="shinsei"/>
+            </apex:outputPanel>
+          </div>
+        </div>
+      </div>
+    </apex:form>
+    <c:CommunityFooter />
+    <script src="{!URLFOR($Resource.jquerycookiemaster, 'src/jquery.cookie.js')}" type="text/javascript"></script>
+  </body>
+</apex:page>
