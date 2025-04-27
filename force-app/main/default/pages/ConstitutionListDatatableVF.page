@@ -1,0 +1,17 @@
+<apex:page standardController="Account" extensions="ConstitutionListDatatableControllerVF" lightningStylesheets="true">
+    <apex:pageBlock >
+      <apex:pageBlockTable value="{!constitutionList}" var="cList" >
+         <apex:column >
+             <apex:facet name="header">案件名</apex:facet>
+             <apex:outputLink value="{!URLFOR('/' + cList.Id)}">{!cList.name}</apex:outputLink>
+         </apex:column> 
+         <apex:column value="{!cList.Account__r.name}"/>
+         <apex:column value="{!cList.Commercial_flow__c}"/>
+         <apex:column value="{!cList.TerminationFlag__c}"/>
+         <!--<apex:column value="{!cList.OperationStartDate__c}"/>-->
+         <!--<apex:column value="{!cList.TerminationDate__c}"/>-->
+      </apex:pageBlockTable>
+   
+   </apex:pageBlock>
+   <!--<apex:detail relatedList="true" title="false" inlineEdit="true"/>-->
+</apex:page>

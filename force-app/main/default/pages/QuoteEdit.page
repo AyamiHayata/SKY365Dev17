@@ -1,0 +1,197 @@
+<apex:page standardController="Quote__c" extensions="QuoteEditController" lightningStylesheets="true" action="{!initAction}">
+
+  <apex:includeScript value="{!URLFOR($Resource.jquery)}"/>
+
+  <style>
+  .cmnTbl {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .noteDiv {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  .yScroll {
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+  </style>
+
+  <script>
+  $(window).on('load',function(){
+    selectUserTypeHide();
+  });
+
+  function selectUserTypeHide() {
+    var objId = '{!$Component.main.quoteBlock.baseSection}' + ':quoteUser_mlktp';
+    document.getElementById(objId).style.display = 'none';
+  }
+
+  // ダブルクリック防止
+  var isSave = false;
+  function check(){
+    if (!isSave) {
+        isSave = true;
+        return true;
+    }
+    return false;
+  } 
+  </script>
+
+  <apex:form id="main">
+    <apex:sectionHeader title="見積編集"/>
+
+    <apex:pageMessages />
+      
+    <apex:pageBlock mode="edit" id="quoteBlock">
+
+      <apex:pageBlockButtons location="bottom">
+        <apex:commandButton value="保存" action="{!saveAction}" onclick="return check();"/>
+        <apex:commandButton value="キャンセル" action="{!cancel}" immediate="true"/>
+      </apex:pageBlockButtons>
+
+      <apex:pageBlockSection title="基本情報" columns="2" id="baseSection">
+        <apex:inputField value="{!quote.QuoteNumber__c}"/>
+        <apex:outputField value="{!quote.ApprovalStatus__c}"/>
+        <apex:inputField value="{!quote.Name}" required="true"/>
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="{!$ObjectType.Quote__c.Fields.ConstitutionCommon__c.Label}"/>
+          <apex:actionRegion >
+            <apex:inputField value="{!quote.ConstitutionCommon__c}" onchange="changeConstitution();"/>
+            <apex:actionFunction name="changeConstitution" action="{!changeConstitution}" reRender="billAccount"/>
+          </apex:actionRegion>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem id="billAccountSectionItem">
+          <apex:outputLabel value="{!$ObjectType.Quote__c.Fields.BillAccount__c.Label}"/>
+          <apex:outputPanel id="billAccount">
+            <apex:inputField value="{!quote.BillAccount__c}"/>
+          </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+        <apex:inputField value="{!quote.QuoteUser__c}" id="quoteUser"/>
+        <apex:inputField value="{!quote.BillingContact__c}" id="billContact"/>
+        <apex:inputField value="{!quote.EndUser__c}"/>
+        <apex:inputField value="{!quote.FirstApprvEndChk__c}"/>
+      </apex:pageBlockSection>
+
+      <apex:pageBlockSection title="見積情報" columns="2">
+        <apex:inputField value="{!quote.QuoteTerm__c}"/>
+        <apex:inputField value="{!quote.EstimateOutputDate__c}"/>
+        <apex:inputField value="{!quote.ClosingMonth__c}" required="true"/>
+        <apex:inputField value="{!quote.ExpirationDate__c}"/>
+        <apex:outputField value="{!quote.PaymentCondition__c}"/>
+        <apex:inputField value="{!quote.Other__c}"/>
+        <apex:inputField value="{!quote.PlannedStartDateOfOperation__c}"/>
+      </apex:pageBlockSection>
+
+      <apex:actionRegion >
+        
+        <apex:pageBlockSection columns="1" id="detailBlockSection">
+          <apex:outputPanel id="detailInfo">
+            <table class="cmnTbl">
+              <tr>
+                <td>
+                  <apex:commandButton value="追加" action="{!addDetail}" reRender="detailInfo"/>
+                  <apex:commandButton value="削除" action="{!delDetail}" reRender="detailInfo"/>
+                </td>
+                <td>
+                  <apex:commandButton value="再計算" action="{!reCalcAction}" reRender="detailInfo"/>
+                </td>
+                <td style="vertical-align:bottom;">合計金額（税抜）</td>
+                <td style="vertical-align:bottom;">
+                  <apex:outputText value="{0,number,###,###,###}">
+                    <apex:param value="{!totalQuoteAmount}"/>
+                  </apex:outputText>円
+                </td>
+                <td style="vertical-align:bottom;">消費税額（10%）</td>
+                <td style="vertical-align:bottom;">
+                  <apex:outputText value="{0,number,###,###,###}">
+                    <apex:param value="{!totalTaxAmount}"/>
+                  </apex:outputText>円
+                </td>
+                <td style="vertical-align:bottom;">合計金額（税込）</td>
+                <td style="vertical-align:bottom;">
+                  <apex:outputText value="{0,number,###,###,###}">
+                    <apex:param value="{!totalAmountIncludingTax}"/>
+                  </apex:outputText>円</td>
+              </tr>
+            </table>
+            <apex:variable value="0" var="rowIndex" />
+            <apex:pageBlockTable value="{!details}" var="detailInner" style="margin-top:15px;" id="detailTbl">
+              <apex:column >
+                <apex:facet name="header"></apex:facet>
+                <apex:inputCheckbox value="{!detailInner.isSelected}" style="margin-top:7px;"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">No</apex:facet>
+                <apex:inputField value="{!detailInner.detail.No__c}" style="width:50px;"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.QuoteDetail__c.Fields.LargeType__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.LargeType__c}"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.QuoteDetail__c.Fields.ProductName__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.ProductNameText__c}" style="width:260px;"/>
+                <apex:inputField value="{!detailInner.detail.ProductName__c}" onchange="setProduct({!rowIndex});" style="width:0px;"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.QuoteDetail__c.Fields.DetailType__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.DetailType__c}"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.QuoteDetail__c.Fields.UnitPrice__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.UnitPrice__c}" id="unitPrice" onchange="changePriceQuantity({!rowIndex});"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.QuoteDetail__c.Fields.Quantity__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.Quantity__c}" id="quantity" onchange="changePriceQuantity({!rowIndex});"  style="width:80px;"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.QuoteDetail__c.Fields.Unit__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.Unit__c}" style="width:80px;"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.QuoteDetail__c.Fields.Amount__c.Label}</apex:facet>
+                <apex:outputField value="{!detailInner.detail.Amount__c}"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">課税区分</apex:facet>
+                <apex:inputField value="{!detailInner.detail.TaxType__c}" onchange="changePriceQuantity({!rowIndex});"/>
+                <apex:variable var="rowIndex" value="{!VALUE(rowIndex) + 1}" />
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.QuoteDetail__c.Fields.TaxPrice__c.Label}</apex:facet>
+                <apex:outputField value="{!detailInner.detail.TaxPrice__c}"/>
+              </apex:column>
+            </apex:pageBlockTable>
+            <apex:actionFunction name="setProduct" action="{!changeProduct}" reRender="detailBlockSection, noteArea">
+              <apex:param name="firstParam" assignTo="{!targetIndex}" value=""/>
+            </apex:actionFunction>
+            <apex:actionFunction name="changePriceQuantity" action="{!changePrice}" reRender="detailBlockSection, noteArea">
+              <apex:param name="firstParam" assignTo="{!targetIndex}" value=""/>
+            </apex:actionFunction>
+          </apex:outputPanel>
+        </apex:pageBlockSection>
+
+        <div style="margin-top:20px;"/>
+
+        <apex:pageBlockSection columns="1">
+          <apex:outputPanel id="noteArea">
+            <div class="noteDiv" style="margin-top:20px;">{!$ObjectType.Quote__c.Fields.Note__c.Label}</div>
+            <div class="noteDiv"><apex:inputField value="{!quote.Note__c}" style="width:100%;height:100px;" styleClass="yScroll"/></div>
+            <div class="noteDiv" style="margin-top:20px;">{!$ObjectType.Quote__c.Fields.Deliverables__c.Label}</div>
+            <div class="noteDiv"><apex:inputField value="{!quote.Deliverables__c}" style="width:100%;height:100px;" styleClass="yScroll"/></div>
+            <div class="noteDiv" style="margin-top:20px;">{!$ObjectType.Quote__c.Fields.AssumedWorkContent__c.Label}</div>
+            <div class="noteDiv"><apex:inputField value="{!quote.AssumedWorkContent__c}" style="width:100%;height:200px;" styleClass="yScroll"/></div>
+            <div class="noteDiv" style="margin-top:20px;">{!$ObjectType.Quote__c.Fields.AssumedWorkContentAdd__c.Label}</div>
+            <div class="noteDiv"><apex:inputField value="{!quote.AssumedWorkContentAdd__c}" style="width:100%;height:300px;" styleClass="yScroll"/></div>
+          </apex:outputPanel>
+        </apex:pageBlockSection>
+
+      </apex:actionRegion>
+      
+    </apex:pageBlock>
+
+  </apex:form>
+
+</apex:page>

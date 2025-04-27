@@ -1,0 +1,569 @@
+<apex:component >
+  <apex:attribute name="notifyInfo" description="連絡先情報" type="NotifyInfo__c" required="true"/>
+  <apex:attribute name="operatorFlg" description="オペレータフラグ" type="boolean" required="true"/>   
+  <apex:attribute name="othernameList" description="その他連絡先名前リスト" type="String[]" required="true"/>
+  <apex:attribute name="otheremailList" description="その他連絡先メールリスト" type="String[]" required="true"/>
+  <table class="table table-bordered text-center" style="background-color:#fff">
+    <tbody>
+      <tr>
+        <apex:outputPanel >
+          <th class="text-center" style="width:6%">削除</th>
+        </apex:outputPanel>
+        <th class="text-center">お名前</th>
+        <th class="text-center">会社名</th>
+        <th class="text-center">メールアドレス</th>
+        <th class="text-center" style="width:10%;">アラートのご連絡先</th>
+        <th class="text-center" style="width:10%;">アラート以外のご連絡先</th>
+        <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+          <th class="text-center" style="width:10%;">月次レポートの送付先</th>
+        </apex:outputPanel>
+        <th class="text-center" style="width:12%;">権限設定</th>
+        <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+          <th class="text-center" style="width:12%;">変更種別</th>
+        </apex:outputPanel>
+      </tr>
+      <tr>
+        <td>
+          <apex:outputPanel >
+            <apex:inputField value="{!notifyInfo.Etc11_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc11_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          <!-- <apex:outputPanel rendered="{!IF(othernameList[10]<>notifyInfo.Etc11_Name__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc11_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(othernameList[10]==notifyInfo.Etc11_Name__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc11_Name__c}" />
+          </apex:outputPanel> -->
+       </td>
+       <td>
+          <apex:inputField value="{!notifyInfo.Etc11_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:outputPanel rendered="{!IF(otheremailList[10]<>notifyInfo.Etc11_Mail__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc11_Mail__c}" styleclass="border rounded container-fluid p-0 ps-1" type="email" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[email]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(otheremailList[10]==notifyInfo.Etc11_Mail__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc11_Mail__c}" />
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc11_AlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc11_OtherThanAlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc11_MonthlyReportSender__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       </apex:outputPanel>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc11_Permission__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc11_ChgList__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+        </td>
+        </apex:outputPanel>
+      </tr>
+      <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <tr >
+          <td colspan="2">エラーログ</td>
+          <td colspan="7">
+            <apex:inputField value="{!notifyInfo.Etc11_ErrorLog__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+          </td>
+        </tr>
+      </apex:outputPanel>
+      <tr>
+        <td>
+          <apex:outputPanel >
+            <apex:inputField value="{!notifyInfo.Etc12_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc12_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          <!-- <apex:outputPanel rendered="{!IF(othernameList[11]<>notifyInfo.Etc12_Name__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc12_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(othernameList[11]==notifyInfo.Etc12_Name__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc12_Name__c}" />
+          </apex:outputPanel> -->
+       </td>
+       <td>
+          <apex:inputField value="{!notifyInfo.Etc12_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:outputPanel rendered="{!IF(otheremailList[11]<>notifyInfo.Etc12_Mail__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc12_Mail__c}" styleclass="border rounded container-fluid p-0 ps-1" type="email" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[email]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(otheremailList[11]==notifyInfo.Etc12_Mail__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc12_Mail__c}" />
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc12_AlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc12_OtherThanAlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc12_MonthlyReportSender__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+        </td>
+       </apex:outputPanel>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc12_Permission__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc12_ChgList__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+        </td>
+        </apex:outputPanel>
+      </tr>
+      <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <tr >
+          <td colspan="2">エラーログ</td>
+          <td colspan="7">
+            <apex:inputField value="{!notifyInfo.Etc12_ErrorLog__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+          </td>
+        </tr>
+      </apex:outputPanel>
+      <tr>
+        <td>
+          <apex:outputPanel >
+            <apex:inputField value="{!notifyInfo.Etc13_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc13_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          <!-- <apex:outputPanel rendered="{!IF(othernameList[12]<>notifyInfo.Etc13_Name__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc13_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(othernameList[12]==notifyInfo.Etc13_Name__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc13_Name__c}" />
+          </apex:outputPanel> -->
+       </td>
+       <td>
+          <apex:inputField value="{!notifyInfo.Etc13_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:outputPanel rendered="{!IF(otheremailList[12]<>notifyInfo.Etc13_Mail__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc13_Mail__c}" styleclass="border rounded container-fluid p-0 ps-1" type="email" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[email]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(otheremailList[12]==notifyInfo.Etc13_Mail__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc13_Mail__c}" />
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc13_AlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc13_OtherThanAlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc13_MonthlyReportSender__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       </apex:outputPanel>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc13_Permission__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc13_ChgList__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+        </td>
+        </apex:outputPanel>
+      </tr>
+      <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <tr >
+          <td colspan="2">エラーログ</td>
+          <td colspan="7">
+            <apex:inputField value="{!notifyInfo.Etc13_ErrorLog__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+          </td>
+        </tr>
+      </apex:outputPanel>
+      <tr>
+        <td>
+          <apex:outputPanel >
+            <apex:inputField value="{!notifyInfo.Etc14_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc14_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          <!-- <apex:outputPanel rendered="{!IF(othernameList[13]<>notifyInfo.Etc14_Name__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc14_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(othernameList[13]==notifyInfo.Etc14_Name__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc14_Name__c}" />
+          </apex:outputPanel> -->
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc14_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+        </td>
+        <td>
+          <apex:outputPanel rendered="{!IF(otheremailList[13]<>notifyInfo.Etc14_Mail__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc14_Mail__c}" styleclass="border rounded container-fluid p-0 ps-1" type="email" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[email]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(otheremailList[13]==notifyInfo.Etc14_Mail__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc14_Mail__c}" />
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc14_AlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc14_OtherThanAlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc14_MonthlyReportSender__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       </apex:outputPanel>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc14_Permission__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc14_ChgList__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+        </td>
+        </apex:outputPanel>
+      </tr>
+      <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <tr >
+          <td colspan="2">エラーログ</td>
+          <td colspan="7">
+            <apex:inputField value="{!notifyInfo.Etc14_ErrorLog__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+          </td>
+        </tr>
+      </apex:outputPanel>
+      <tr>
+        <td>
+          <apex:outputPanel >
+            <apex:inputField value="{!notifyInfo.Etc15_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc15_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          <!-- <apex:outputPanel rendered="{!IF(othernameList[14]<>notifyInfo.Etc15_Name__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc15_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(othernameList[14]==notifyInfo.Etc15_Name__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc15_Name__c}" />
+          </apex:outputPanel> -->
+       </td>
+       <td>
+          <apex:inputField value="{!notifyInfo.Etc15_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:outputPanel rendered="{!IF(otheremailList[14]<>notifyInfo.Etc15_Mail__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc15_Mail__c}" styleclass="border rounded container-fluid p-0 ps-1" type="email" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[email]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(otheremailList[14]==notifyInfo.Etc15_Mail__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc15_Mail__c}" />
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc15_AlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc15_OtherThanAlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc15_MonthlyReportSender__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+        </td>
+       </apex:outputPanel>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc15_Permission__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc15_ChgList__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+        </td>
+        </apex:outputPanel>
+      </tr>
+      <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <tr >
+          <td colspan="2">エラーログ</td>
+          <td colspan="7">
+            <apex:inputField value="{!notifyInfo.Etc15_ErrorLog__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+          </td>
+        </tr>
+      </apex:outputPanel>
+      <tr>
+        <td>
+          <apex:outputPanel >
+            <apex:inputField value="{!notifyInfo.Etc16_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc16_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          <!-- <apex:outputPanel rendered="{!IF(othernameList[15]<>notifyInfo.Etc16_Name__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc16_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(othernameList[15]==notifyInfo.Etc16_Name__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc16_Name__c}" />
+          </apex:outputPanel> -->
+       </td>
+       <td>
+          <apex:inputField value="{!notifyInfo.Etc16_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:outputPanel rendered="{!IF(otheremailList[15]<>notifyInfo.Etc16_Mail__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc16_Mail__c}" styleclass="border rounded container-fluid p-0 ps-1" type="email" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[email]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(otheremailList[15]==notifyInfo.Etc16_Mail__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc16_Mail__c}" />
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc16_AlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc16_OtherThanAlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc16_MonthlyReportSender__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       </apex:outputPanel>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc16_Permission__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc16_ChgList__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+        </td>
+        </apex:outputPanel>
+      </tr>
+      <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <tr >
+          <td colspan="2">エラーログ</td>
+          <td colspan="7">
+            <apex:inputField value="{!notifyInfo.Etc16_ErrorLog__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+          </td>
+        </tr>
+      </apex:outputPanel>
+      <tr>
+        <td>
+          <apex:outputPanel >
+            <apex:inputField value="{!notifyInfo.Etc17_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc17_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          <!-- <apex:outputPanel rendered="{!IF(othernameList[16]<>notifyInfo.Etc17_Name__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc17_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(othernameList[16]==notifyInfo.Etc17_Name__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc17_Name__c}" />
+          </apex:outputPanel> -->
+       </td>
+       <td>
+          <apex:inputField value="{!notifyInfo.Etc17_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:outputPanel rendered="{!IF(otheremailList[16]<>notifyInfo.Etc17_Mail__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc17_Mail__c}" styleclass="border rounded container-fluid p-0 ps-1" type="email" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[email]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(otheremailList[16]==notifyInfo.Etc17_Mail__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc17_Mail__c}" />
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc17_AlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc17_OtherThanAlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc17_MonthlyReportSender__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       </apex:outputPanel>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc17_Permission__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc17_ChgList__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+        </td>
+        </apex:outputPanel>
+      </tr>
+      <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <tr >
+          <td colspan="2">エラーログ</td>
+          <td colspan="7">
+            <apex:inputField value="{!notifyInfo.Etc17_ErrorLog__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+          </td>
+        </tr>
+      </apex:outputPanel>
+      <tr>
+        <td>
+          <apex:outputPanel >
+            <apex:inputField value="{!notifyInfo.Etc18_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+          </apex:outputPanel>
+          </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc18_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          <!-- <apex:outputPanel rendered="{!IF(othernameList[17]<>notifyInfo.Etc18_Name__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc18_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(othernameList[17]==notifyInfo.Etc18_Name__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc18_Name__c}" />
+          </apex:outputPanel> -->
+       </td>
+       <td>
+          <apex:inputField value="{!notifyInfo.Etc18_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:outputPanel rendered="{!IF(otheremailList[17]<>notifyInfo.Etc18_Mail__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc18_Mail__c}" styleclass="border rounded container-fluid p-0 ps-1" type="email" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[email]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(otheremailList[17]==notifyInfo.Etc18_Mail__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc18_Mail__c}" />
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc18_AlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc18_OtherThanAlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc18_MonthlyReportSender__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+        </td>
+       </apex:outputPanel>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc18_Permission__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc18_ChgList__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+        </td>
+        </apex:outputPanel>
+      </tr>
+      <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <tr >
+          <td colspan="2">エラーログ</td>
+          <td colspan="7">
+            <apex:inputField value="{!notifyInfo.Etc18_ErrorLog__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+          </td>
+        </tr>
+      </apex:outputPanel>
+      <tr>
+        <td>
+          <apex:outputPanel >
+            <apex:inputField value="{!notifyInfo.Etc19_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc19_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          <!-- <apex:outputPanel rendered="{!IF(othernameList[18]<>notifyInfo.Etc19_Name__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc19_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(othernameList[18]==notifyInfo.Etc19_Name__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc19_Name__c}" />
+          </apex:outputPanel> -->
+       </td>
+       <td>
+          <apex:inputField value="{!notifyInfo.Etc19_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:outputPanel rendered="{!IF(otheremailList[18]<>notifyInfo.Etc19_Mail__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc19_Mail__c}" styleclass="border rounded container-fluid p-0 ps-1" type="email" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[email]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(otheremailList[18]==notifyInfo.Etc19_Mail__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc19_Mail__c}" />
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc19_AlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc19_OtherThanAlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc19_MonthlyReportSender__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+        </td>
+       </apex:outputPanel>
+        
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc19_Permission__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc19_ChgList__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+        </td>
+        </apex:outputPanel>
+      </tr>
+      <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <tr >
+          <td colspan="2">エラーログ</td>
+          <td colspan="7">
+            <apex:inputField value="{!notifyInfo.Etc19_ErrorLog__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+          </td>
+        </tr>
+      </apex:outputPanel>
+      <tr>
+        <td>
+          <apex:outputPanel >
+            <apex:inputField value="{!notifyInfo.Etc20_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc20_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          <!-- <apex:outputPanel rendered="{!IF(othernameList[19]<>notifyInfo.Etc20_Name__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc20_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[requiredSpace]] validate[maxSize[41]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(othernameList[19]==notifyInfo.Etc20_Name__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc20_Name__c}" />
+          </apex:outputPanel> -->
+       </td>
+       <td>
+          <apex:inputField value="{!notifyInfo.Etc20_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:outputPanel rendered="{!IF(otheremailList[19]<>notifyInfo.Etc20_Mail__c || operatorFlg, true, false)}">
+            <apex:inputField value="{!notifyInfo.Etc20_Mail__c}" styleclass="border rounded container-fluid p-0 ps-1" type="email" ignoreEditPermissionForRendering="true" html-data-validation-engine="validate[custom[email]]"/>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!IF(otheremailList[19]==notifyInfo.Etc20_Mail__c && !operatorFlg, true, false)}">
+            <apex:outputField value="{!notifyInfo.Etc20_Mail__c}" />
+          </apex:outputPanel>
+        </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc20_AlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc20_OtherThanAlertContact__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc20_MonthlyReportSender__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+       </td>
+       </apex:outputPanel>
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc20_Permission__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+       </td>
+       <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <td>
+          <apex:inputField value="{!notifyInfo.Etc20_ChgList__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+        </td>
+        </apex:outputPanel>
+      </tr>
+      <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+        <tr >
+          <td colspan="2">エラーログ</td>
+          <td colspan="7">
+            <apex:inputField value="{!notifyInfo.Etc20_ErrorLog__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+          </td>
+        </tr>
+      </apex:outputPanel>
+    </tbody>
+  </table>
+
+</apex:component>

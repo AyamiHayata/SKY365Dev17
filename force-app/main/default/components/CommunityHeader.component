@@ -1,0 +1,117 @@
+<apex:component >
+  <apex:attribute name="code" description="許可コード" type="String" required="true"/>
+  <apex:attribute name="name" description="氏名" type="String" required="true"/>
+  <apex:attribute name="selectPage" description="表示画面" type="String" required="false"/>
+
+<style>
+    .nav > li {
+      float: none;
+    }
+  
+    .prof_link {
+      color: #777777;
+    }
+  
+    .nav_header {
+      /* background: #483d8b; */
+      /* background: linear-gradient(to bottom,  #f0f8ff 50%,#6495ed 100%); */
+      background: #ffffff;
+      padding-left: 0;
+      padding-right: 0;
+    }
+  
+    .nav > li {
+      /* border-right: 1px solid #999999;
+      border-left: 1px solid #999999; */
+      height: 100%;
+    }
+    .nav-item { /*2023.11.20 add*/
+      text-align: left !important;
+    }
+  
+    .nav > li > a{
+      color: #333333;
+      font-size:16px;
+      text-decoration: none;
+    }
+  
+    .nav > li > a:hover{
+      background-color: #6495ed;
+    }
+  
+    .msgbox {
+      padding: 0.5em 1em;
+      margin: 2em 0;
+      color: #232323;
+      background: #fff8e8;
+      border-left: solid 10px #ffc06e;
+      display:none;
+    }
+  
+    .msgbox p {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+<div class="container-fluid p-0">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container m-auto">
+        <a class="navbar-brand" href="#">
+          <apex:image url="{!$Resource.skycoodle_header}" width="200" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="container-fluid" id="navbarNav">
+          <ul class="navbar-nav navbar-text nav-fill">
+            <li class="nav-item">
+              <apex:outputLink value="/oms?code={!code}" styleClass="nav-link active" rendered="{!IF(selectPage=='TOP',true,false)}">トップ</apex:outputLink>
+              <apex:outputLink value="/oms?code={!code}" styleClass="nav-link text-dark" rendered="{!IF(selectPage<>'TOP',true,false)}">トップ</apex:outputLink>
+            </li>
+            <li class="nav-item">
+              <apex:outputLink value="/oms/ConstitutionSelect?code={!code}&forwardPage=kanshi" styleClass="nav-link active" rendered="{!IF(selectPage=='kanshi',true,false)}">静観設定</apex:outputLink>
+              <apex:outputLink value="/oms/ConstitutionSelect?code={!code}&forwardPage=kanshi" styleClass="nav-link text-dark"  rendered="{!IF(selectPage<>'kanshi',true,false)}">静観設定</apex:outputLink>
+            </li>
+            <li class="nav-item">
+              <apex:outputLink value="/apex/ConstitutionSelect?code={!code}&forwardPage=renrakusaki" styleClass="nav-link active"  rendered="{!IF(selectPage=='renrakusaki',true,false)}">
+                連絡先情報
+              </apex:outputLink>
+              <apex:outputLink value="/apex/ConstitutionSelect?code={!code}&forwardPage=renrakusaki" styleClass="nav-link text-dark"  rendered="{!IF(selectPage<>'renrakusaki',true,false)}">
+                連絡先情報
+              </apex:outputLink>
+            </li>
+            <li class="nav-item dropdown">
+              <apex:outputLink value="#" styleClass="nav-link dropdown-toggle active" rendered="{!IF(selectPage=='rreport' || selectPage=='sreport',true,false)}" html-data-bs-toggle="dropdown" html-aria-expanded="false">レポート</apex:outputLink>
+              <apex:outputLink value="#" styleClass="nav-link dropdown-toggle text-dark"  rendered="{!IF(selectPage<>'rreport' && selectPage<>'sreport',true,false)}" html-data-bs-toggle="dropdown" html-aria-expanded="false">レポート</apex:outputLink>
+              <ul class="dropdown-menu">
+                <li>
+                  <apex:outputLink value="/apex/ConstitutionSelect?code={!code}&forwardPage=rreport" styleClass="nav-link active" rendered="{!IF(selectPage=='rreport',true,false)}">リソースレポート</apex:outputLink>
+                  <apex:outputLink value="/apex/ConstitutionSelect?code={!code}&forwardPage=rreport" styleClass="nav-link text-dark"  rendered="{!IF(selectPage<>'rreport',true,false)}">リソースレポート</apex:outputLink>
+                </li>
+                <li>
+                  <apex:outputLink value="/apex/ConstitutionSelect?code={!code}&forwardPage=sreport" styleClass="nav-link active" rendered="{!IF(selectPage=='sreport',true,false)}">障害レポート</apex:outputLink>
+                  <apex:outputLink value="/apex/ConstitutionSelect?code={!code}&forwardPage=sreport" styleClass="nav-link text-dark"  rendered="{!IF(selectPage<>'sreport',true,false)}">障害レポート</apex:outputLink>
+                </li>
+              </ul>
+            </li>
+            <!-- SF_CORE_DEV-207 対応 2023/06/07 kikuchi -->
+            <!--<li class="nav-item">
+              <apex:outputLink value="https://sky365.force.com/sky365partner" styleClass="nav-link text-dark">ご請求情報</apex:outputLink>
+            </li>-->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-dark" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                <apex:image url="{!$Resource.skycoodle_userIcon}" width="25"/>&nbsp; {!name}
+              </a>
+              <ul class="dropdown-menu ">
+                <li>
+                  <!--<apex:outputLink value="https://serverworks1563533001.zendesk.com/access/logout" styleClass="dropdown-item">ログアウト</apex:outputLink>-->
+                  <apex:outputLink value="{!$Label.PS_LOGOUT_URL}?code={!code}" styleClass="dropdown-item">ログアウト</apex:outputLink>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+</apex:component>

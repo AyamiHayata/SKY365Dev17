@@ -1,0 +1,92 @@
+<apex:component >
+  <apex:attribute name="rtrOutput" description="軽減税率情報出力" type="String" required="true"/>
+  <apex:attribute name="rtrInfo" description="軽減税率情報" type="Quote__c" required="true"/>
+  <div>
+    <apex:outputPanel rendered="{!IF(rtrOutput=='last',true,false)}">
+      <table class="frame-table" cols='5'>
+        <thead>
+          <tr>
+            <th width="10%"></th>
+            <th width="40%"></th>
+            <th width="10%"></th>
+            <th width="20%"></th>
+            <th width="20%"></th>
+          </tr>
+        </thead>
+        <tr>
+          <!--<td colspan="2">{!$Label.QOUTE_PDF_TAX_ANNOTATION}</td>-->
+          <td colspan="2">※ は非課税対象</td>
+          <td class="right-td">{!$Label.QUOTE_PDF_TOTAL_AMOUNT_TAX_RATES}</td>
+          <td class="right-td">
+            <apex:outputText value="{0,number,###,###,###}">
+              <apex:param value="{!rtrInfo.TotalQuoteAmount__c}" />
+            </apex:outputText>
+          </td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="right-td"><!--{!$Label.QOUTE_PDF_TAX_8}
+            <apex:outputText value="{0,number,###,###,###}">
+              <apex:param value="{!rtrInfo.TaxAmount8New__c}" />
+            </apex:outputText>　{!$Label.QOUTE_PDF_TAX_10}
+            <apex:outputText value="{0,number,###,###,###}">
+              <apex:param value="{!rtrInfo.TaxAmount10New__c}" />
+            </apex:outputText>{!$Label.QOUTE_PDF_TAX_LAST}-->
+          </td>
+          <td class="right-td">{!$Label.QUOTE_PDF_TOTAL_TAX_TAX_RATES}</td>
+          <td class="right-td">
+            <apex:outputText value="{0,number,###,###,###}">
+              <apex:param value="{!rtrInfo.TotalTaxAmount__c}" />
+            </apex:outputText>
+          </td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="right-td">{!$Label.QUOTE_PDF_TOTAL_AMOUNT_IN_TAX_TAX_RATES}</td>
+          <td class="right-td">
+            <apex:outputText value="{0,number,###,###,###}">
+              <apex:param value="{!rtrInfo.TotalAmountIncludingTax__c}" />
+            </apex:outputText>
+          </td>
+          <td></td>
+        </tr>
+      </table>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!IF(rtrOutput=='next',true,false)}">
+      <table class="frame-table" cols='5'>
+        <thead>
+          <tr>
+            <th width="20%"></th>
+            <th width="30%"></th>
+            <th width="10%"></th>
+            <th width="20%"></th>
+            <th width="20%"></th>
+          </tr>
+        </thead>
+        <tr>
+          <td colspan="2">{!$Label.QUOTE_PDF_NEXT_PAGE}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td height="15"></td>
+          <td height="15"></td>
+          <td height="15"></td>
+          <td height="15"></td>
+          <td height="15"></td>
+        </tr>
+        <tr>
+          <td height="15"></td>
+          <td height="15"></td>
+          <td height="15"></td>
+          <td height="15"></td>
+          <td height="15"></td>
+        </tr>
+      </table>
+    </apex:outputPanel>
+  </div>
+</apex:component>

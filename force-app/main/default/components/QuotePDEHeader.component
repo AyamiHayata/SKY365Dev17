@@ -1,0 +1,40 @@
+<apex:component >
+  <apex:attribute name="headerInfo" description="見積書帳票ヘッダ情報" type="Quote__c" required="true"/>
+  <apex:attribute name="maxPage" description="最大ページ" type="Integer" required="false"/>
+  <apex:attribute name="curPage" description="現在ページ" type="Integer" required="false"/>
+  <div>
+    <table class="non-border" cols='4'>
+      <thead>
+        <tr>
+          <th width="30%"></th>
+          <th width="40%"></th>
+          <th width="10%"></th>
+          <th width="20%"></th>
+        </tr>
+      </thead>
+      <tr>
+        <td>{!curPage}/{!maxPage}</td>
+        <td class="title" rowspan="2">{!$Label.QUOTE_PDF_TITLE}</td>
+        <td>{!$ObjectType.Quote__c.Fields.QuoteNumber__c.Label}：</td>
+        <td>{!headerInfo.QuoteNumber__c}</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>{!$Label.QUOTE_PDF_OUTPUT_DATE}</td>
+        <td>
+          <apex:outputText value="{0,date, yyyy/MM/dd}" >
+            <apex:param value="{!headerInfo.EstimateOutputDate__c}"/>
+          </apex:outputText>
+        </td>
+      </tr>
+<!-- 見積書レイアウト改修 2023/7/19 kikuchi -->
+      <tr>
+        <td></td>
+        <td></td>
+        <td>登録番号：</td>
+        <td>{!$Label.INVOICE_NO}</td>
+      </tr>
+<!-- 見積書レイアウト改修 2023/7/19 kikuchi -->
+    </table>
+  </div>
+</apex:component>

@@ -1,0 +1,33 @@
+<apex:page controller="TerraskySupportMonthlyReportController" lightningStylesheets="true" showHeader="true">
+<head>
+    <style>
+    </style>
+    <script type = "text/javascript">
+    </script>            
+</head>
+    
+<body id ="body">
+
+</body>
+<apex:sectionHeader title="サポートデスク月次レポート作成"/>
+<apex:form id="form">
+  <apex:pageBlock >
+    <apex:pageBlockSection title="条件">
+        <apex:inputText value="{!createYear}" label="年"/>
+        
+        <apex:selectList value="{!createMonth}" size="1" label="月">
+            <apex:selectOptions value="{!Months}"/>
+        </apex:selectList>
+
+        <apex:selectList value="{!productType}" size="1" label="対象製品">
+            <apex:selectOptions value="{!productTypes}"/>
+        </apex:selectList>
+        
+    </apex:pageBlockSection>
+    <apex:pageBlockButtons >
+        <apex:commandButton value="作成" action="{!execute}"/>
+    </apex:pageBlockButtons>    
+  </apex:pageBlock>
+
+</apex:form>    
+</apex:page>

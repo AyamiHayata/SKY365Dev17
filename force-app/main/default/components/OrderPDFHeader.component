@@ -1,0 +1,28 @@
+<apex:component >
+  <apex:attribute name="headerInfo" description="注文書帳票ヘッダ情報" type="Quote__c" required="true"/>
+  <apex:attribute name="maxPage" description="最大ページ" type="Integer" required="false"/>
+  <apex:attribute name="curPage" description="現在ページ" type="Integer" required="false"/>
+  <div>
+    <table class="non-border" cols='4'>
+      <thead>
+        <tr>
+          <th width="30%"></th>
+          <th width="40%"></th>
+          <th width="10%"></th>
+          <th width="20%"></th>
+        </tr>
+      </thead>
+      <tr>
+        <td>{!curPage}/{!maxPage}</td>
+        <td class="title" rowspan="2">注文書</td>
+        <td>注文番号：</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>注文日：</td>
+        <td></td>
+      </tr>
+    </table>
+  </div>
+</apex:component>

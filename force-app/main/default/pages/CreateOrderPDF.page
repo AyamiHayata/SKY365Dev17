@@ -1,0 +1,160 @@
+<apex:page renderAs="PDF" applyHtmlTag="false" showHeader="false" extensions="CreateQuotePDFController" action="{!initAction}" standardController="Quote__c">
+  <!-- スタイル定義 START-->
+  <head>
+    <style>
+      @page {
+        size: 210mm 297mm;
+        margin: 0mm;
+        padding: 7mm;
+      }
+      body {
+        font-family: 'Arial Unicode MS';
+        width:191mm;
+        font-size:12px;
+      }
+      .title {
+          text-align: center;
+          font-weight: bold;
+          font-size: x-large;
+      }
+      table.frame-table {
+        border: 1px solid #333;
+        frame: box;
+        border-top: hidden;
+        width: 100%;
+      }
+
+      table.border-table {
+        border: 1px solid #333;
+        border-collapse: collapse;
+        table-layout: fixed;
+        width: 100%;
+      }
+      table.border-table th {
+        border: 1px solid #333;
+        padding-left: 5px;
+        text-align: center;
+        background-color: silver;
+      }
+      table.border-table td {
+          border: 1px solid #333;
+          padding-left: 5px;
+      }
+      table.non-border {
+          border-collapse: collapse;
+          table-layout: fixed;
+          width: 100%;
+      }
+      .font-bold {
+          font-weight: bold;
+          font-size: medium;
+      }
+      .underline {
+          font-weight: bold;
+          font-size: large;
+          text-decoration: underline;
+      }
+      .right-td {
+          text-align: right;
+      }
+      .center-td {
+          text-align: center;
+      }
+      td.border-td {
+          border: 1px solid #333;
+          border-collapse: collapse;
+      }
+      td.non-border-top-td {
+        border: 1px solid #333;
+        border-top: hidden;
+      }
+      td.non-border-bottom-td {
+        border: 1px solid #333;
+        border-bottom: hidden;
+      }
+      td.border-center-td {
+          border: 1px solid #333;
+          border-collapse: collapse;
+          text-align: center;
+      }
+      td.border-silver-td {
+          border: 1px solid #333;
+          border-collapse: collapse;
+          text-align: center;
+          background-color: silver;
+      }
+      p.page-break {
+          page-break-before: always;
+      }
+      .companyLogoTd {
+        position: relative;
+        width: 390px;
+        height: 92px;
+      }
+      .companyLogo {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        font-size: medium;
+        font-weight: bold;
+      }
+      .detail-tr {
+        height: 38px;
+        /*height: 19px;*/
+      }
+      .retention-period {
+        border: 1px solid #333;
+        border-collapse: collapse;
+        text-align: center;
+        background-color: silver;
+        color: #FFFFFF;
+        text-align: center;
+        padding: 5px;
+        font-size: medium;
+        font-weight: bold;
+      }
+    </style>
+
+  </head>
+  <body>
+    <div>
+      <!--ヘッダ出力-->
+      <c:OrderPDFHeader headerInfo="{!quote}" curPage="1" maxPage="{!maxPage + 1}"/>
+      <!--発注書出力-->
+      <apex:variable var="idx" value="{!1}" />
+      <apex:repeat value="{!quoteDetailPage}" var="qdList">
+        <apex:outputPanel rendered="{!IF(idx==1,true,false)}">
+          <!--見積情報出力 1ページ目のみ-->
+          <c:OrderPDFMain page="first" quote="{!quote}" billPostalCode="{!billPostalCode}" billAddress="{!billAddress}" billAddress2="{!billAddress2}" maxPage="{!maxPage}" deptPostalCode="{!deptPostalCode}" deptAddress="{!deptAddress}" deptAddress2="{!deptAddress2}" deptTel="{!deptTel}" markResponsible="{!markResponsible}" markManager="{!markManager}" markSalesOwner="{!markSalesOwner}" noteList="{!noteList}" assumedWorkContentList="{!assumedWOrkContentList}" deliverablesList="{!deliverablesList}"/>
+        </apex:outputPanel>
+
+        <!--明細出力-->
+        <apex:outputPanel rendered="{!IF(idx<>1,true,false)}">
+          <p class="page-break">
+            <!--ヘッダ出力-->
+            <c:OrderPDFHeader headerInfo="{!quote}" curPage="{!idx}" maxPage="{!maxPage + 1}"/>
+            <br></br>
+          </p>
+        </apex:outputPanel>
+        <!-- 2022.06.02 comment out
+          <c:OrderPDFMain page="detail" qdList="{!qdList}" idx="{!idx}" maxPage="{!maxPage}" quote="{!quote}" /> -->
+        <!-- 2022.06.02 add 1line-->
+          <c:OrderPDFMain page="detail" qdList="{!qdList}" idx="{!idx}" maxPage="{!maxPage}" quote="{!quote}" detailPage="{!detailPage}"/>
+        <apex:variable var="idx" value="{!idx + 1}" />
+      </apex:repeat>
+
+      <!--前提条件・備考-->
+      <p class="page-break">
+        <!-- 2022.06.02 delete and add 1line -->
+        <!-- <c:OrderPDFMain page="note" quote="{!quote}" maxPage="{!maxPage}" noteList="{!noteList}" assumedWorkContentList="{!assumedWOrkContentList}" deliverablesList="{!deliverablesList}"/> -->
+        <c:OrderPDFMain page="note" quote="{!quote}" idx="{!detailPage}" maxPage="{!maxPage}" noteList="{!noteList}" assumedWorkContentList="{!assumedWOrkContentList}" deliverablesList="{!deliverablesList}"/>
+      </p>
+      <!--想定作業内容追記 2022.06.02 add-->
+      <apex:outputPanel rendered="{!assumedWorkAddContentFlg}">
+        <p class="page-break">
+          <c:OrderPDFMain page="noteadd" quote="{!quote}" maxPage="{!maxPage}" assumedWorkAddContentList="{!assumedWorkAddContentList}" />
+        </p>
+      </apex:outputPanel>
+    </div>
+  </body>
+</apex:page>

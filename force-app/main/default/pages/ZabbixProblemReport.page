@@ -1,0 +1,239 @@
+<apex:page docType="html-5.0"  showHeader="false" sidebar="false" id="Page" standardStylesheets="false" controller="ZabbixProblemReportController" action="{!initAction}" cache="false">
+  <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"></meta>
+      <title>レポート</title>
+      <c:CoodleHeadInfo />
+      <style>
+      .arrow_r {
+        position: relative;
+        display: inline-block;
+        padding-left: 20px;
+        color: #333;
+        text-decoration: none;
+      }
+      .arrow_r:before {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border: 0;
+        border-top: solid 2px #333;
+        border-right: solid 2px #333;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        margin-top: -4px;
+        transform: rotate(45deg);
+      }
+      .arrow_l {
+        position: relative;
+        display: inline-block;
+        padding-top: 50px;
+        padding-left: 20px;
+        color: #333;
+        text-decoration: none;
+      }
+      .arrow_l:before {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border: 0;
+        border-top: solid 2px #333;
+        border-left: solid 2px #333;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        margin-top: -4px;
+        transform: rotate(-45deg);
+      }
+      .selectbox{
+        border: 1px black solid;
+        height: 60px;
+        background-color: white;
+      }
+      .selectlist{
+        padding: 0.5rem;
+        border-radius: 0.3rem;
+        min-width: 200px;
+        max-width: 200px;
+        min-height: 130px;
+        border: none;
+        overflow: scroll;
+      }
+      select.selectlist option{
+        padding: 0.3rem;
+      }
+      td.seikanchu {
+        color: red;
+      }
+      .w40{
+        width:40%;
+      }
+      .refresh:hover {
+        filter: brightness(50%);
+        transition-duration: 0.3s;
+      }  
+      div.messageText h4 {
+        display: none;
+      }
+      div.messageText {
+        color:rgb(243 32 32);
+      }
+      p.refreshcurrenttime{
+        display: flex;
+        justify-content: end;
+        align-items: center;
+      }
+      </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+      // 初期表示
+      $(document).ready(function(){
+        var a = $.cookie("BrowserId");
+        $("[id$='sessionid']").val(a);
+      });
+
+      document.addEventListener("DOMContentLoaded", function() {
+        const filterInput = document.getElementById('filterInput');
+        const optionsList = document.getElementById('Page:formID:candidateAwsList');
+        const originalOptions = Array.from(optionsList.options);
+        const selectAwsList = document.getElementById('Page:formID:selectAwsList');
+        const rlink = document.getElementById('Page:formID:arrow_r_link');
+        const llink = document.getElementById('Page:formID:arrow_l_link');
+
+
+
+        function filterOptions() {
+          const filterText = filterInput.value.toLowerCase();
+          optionsList.innerHTML = ''; // 一度全てのオプションをクリア
+
+          // フィルターに前方一致するオプションだけを追加
+          originalOptions.forEach(option => {
+            const optionText = option.text.toLowerCase();
+            if (optionText.startsWith(filterText)) {
+              optionsList.add(new Option(option.text, option.value)); // オプションをクローンして追加
+            }
+          });
+        }
+
+        function filterClear() {
+          //'Page:formID:filterInput'の値をクリアする
+
+           var textBox = document.getElementById('Page:formID:filterInput');
+           textBox.value = "";
+        }
+
+        filterInput.addEventListener('keyup', filterOptions);     
+   
+          
+
+ 
+      });
+
+
+
+    </script>
+    <apex:form id="formID">
+      <c:CommunityHeader code="{!code}" name="{!name}" selectPage="report"/>
+      <apex:inputHidden id="sessionid" value="{!sessionid}" />     
+      <div class="container-fluid p-5" style="background-color:rgb(54, 143, 233);padding: 2rem;">
+        <div class="container m-auto p-5 rounded" style="background-color:#DDDDDD;">
+          <apex:pageMessages />
+          <div class="row">
+            <div class="col-lg-12 col-md-12" style="padding: 1rem;">
+              <h3 class="text-start">案件名：{!constitutionName}</h3>
+              <apex:inputHidden value="{!constitutionid}" />
+              <apex:inputHidden value="{!companyName}" />
+            </div>
+          </div>
+
+          <div  class="row">
+            <div class="col-lg-12 col-md-12" style="padding: 1rem;">
+              <p class="refreshcurrenttime">
+                <apex:commandButton image="{!$Resource.refresh}" styleclass="refresh" action="{!refresh}" id="btn" ></apex:commandButton>
+                　現在時刻&nbsp;{!currentDateTimeString}
+              </p>
+            </div>
+          </div>
+
+          <div class="row p-3 mb-3 border border-dark" id="maintenaceinputinfo">
+            <p class="text-sm-start fs-5">対象リソース</p>
+            <div class="col-12 col-md-6">
+              <input type="text" id="filterInput" size="20" placeholder="絞り込み..."/>
+              <apex:actionRegion >
+              <div class="row align-items-start p-0">
+                <div class="col w40" >
+                  選択可能
+                  <apex:selectList value="{!candidateAwsResources}" multiselect="true" id="candidateAwsList" styleClass="selectlist" disabled="{!IF(selectedStatus=='選択',true,false)}" style="height: 100px;">
+                    <apex:selectOptions value="{!cawsResources}"/>
+                  </apex:selectList>
+                </div>
+                <div class="col text-center">
+                  &nbsp;<br/>
+                  <apex:outputLink value="#" styleClass="arrow_r" id="arrow_r_link" disabled="{!IF(selectedStatus=='選択',true,false)}"  onclick="callmoveAwsResources()"></apex:outputLink>
+                  <apex:actionFunction action="{!moveAwsResources}" name="callmoveAwsResources"/>
+                  <br/>
+                  <apex:outputLink value="#" styleClass="arrow_l" id="arrow_l_link" disabled="{!IF(selectedStatus=='選択',true,false)}"  onclick="callremoveAwsResources()"></apex:outputLink>
+                  <apex:actionFunction action="{!removeAwsResources}" name="callremoveAwsResources"/>
+                </div>
+                <div class="col w40">
+                  選択済み
+                  <apex:selectList value="{!selectAwsResources}" multiselect="true" id="selectAwsList" styleClass="selectlist" disabled="{!IF(selectedStatus=='選択',true,false)}" html-data-validation-engine="validate[required]" style="height: 100px;">
+                    <apex:selectOptions value="{!awsResources}" />
+                  </apex:selectList>
+                </div>
+              </div>
+              </apex:actionRegion>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row justify-content-center">
+                <div class="col-auto">
+                  <p>
+                    <apex:commandButton action="{!problemSearch}" value="表示" styleClass="btn btn-secondary me-1 px-3" id="search" />
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+
+          <div class="row" id="detail">
+            <div class="col-md-12">
+              <table class="table table-bordered align-middle text-center" style="background-color:#fff">
+                <thead style="background-color:#BCBCBC;">
+                  <tr>
+                    <th scope="col" style="width:15%">時間</th>
+                    <th scope="col" style="width:10%">深刻度</th>
+                    <th scope="col" style="width:20%">ホスト</th>
+                    <th scope="col" style="width:38%">障害</th>
+                    <th scope="col" style="width:10%">継続時間</th>
+                    <th scope="col" style="width:7%">状況</th>
+                  </tr>          
+                </thead>
+                <tbody style="border-top:1px solid;">
+                  <apex:repeat var="problemReportInfo" value="{!problemReportInfoList}">
+                    <tr>
+                      <td>{!problemReportInfo.lastchangeCnv}</td>
+                      <td style="background-color:{!problemReportInfo.priorityColorCnv}">{!problemReportInfo.priorityCnv}</td>
+                      <td align="left">{!problemReportInfo.host}</td>
+                      <td align="left">{!problemReportInfo.description}</td>
+                      <td align="right">{!problemReportInfo.duration}</td>
+                      <td align="right" style="color:red; text-align: center;" >{!problemReportInfo.maintenanceStatusCnv}</td>
+                    </tr> 
+                  </apex:repeat>
+                </tbody>
+              </table>
+            </div>
+          </div>          
+
+
+        </div>
+      </div>
+    </apex:form>
+  </body>
+  <c:CommunityFooter />
+  <script src="{!URLFOR($Resource.jquerycookiemaster, 'src/jquery.cookie.js')}" type="text/javascript"></script> 
+</apex:page>

@@ -1,0 +1,3 @@
+<apex:page docType="html-5.0"  showHeader="false" sidebar="false" id="Page" standardStylesheets="false" controller="CommunityTopController" action="{!communitysiteLogout}">
+  <c:CommunityCommon title="ログアウト" message="ログアウトしました" />
+</apex:page>

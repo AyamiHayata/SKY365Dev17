@@ -1,0 +1,77 @@
+<apex:page docType="html-5.0"  showHeader="false" sidebar="false" id="Page" standardStylesheets="false" controller="SupportSummaryController" action="{!initAction}">
+  <head>
+    <title>トップ</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" crossorigin="anonymous"/>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"  crossorigin="anonymous"></script>
+    <script src="{!URLFOR($Resource.jQueryValidationEngine, 'js/languages/jquery.validationEngine-ja.js')}" type="text/javascript" charset="utf-8"></script>
+    <script src="{!URLFOR($Resource.jQueryValidationEngine, 'js/jquery.validationEngine.js')}" type="text/javascript" charset="utf-8"></script>
+    <script src="https://ajaxzip3.github.io/ajaxzip3.js" charset="UTF-8"></script>
+    <link rel="stylesheet" href="{!URLFOR($Resource.jQueryValidationEngine, 'css/validationEngine.jquery.css')}" type="text/css"/> 
+    <apex:includeScript value="/soap/ajax/25.0/connection.js"/>
+    <apex:includeScript value="/soap/ajax/25.0/apex.js"/>
+    <style>
+    thead {
+      font-size: 30px;
+    }
+
+    tbody {
+      font-size: 60px;
+    }
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+      setTimeout("location.reload()",600000);
+      // 初期表示
+      $(document).ready(function(){
+      });
+    </script>
+    <apex:form id="formID">
+        <div class="container">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12">
+              <table class="table table-hover">
+                <thead>
+                  <tr class="tableHead">
+                    <th class="quoteNumer">
+                      <apex:outputLabel value="" />
+                    </th>
+                    <th class="quoteExpiration">
+                      <apex:outputLabel value="新規" />
+                    </th>
+                    <th class="quoteIssue">
+                      <apex:outputLabel value="回答有" />
+                    </th>
+                    <th class="quoteday5Alert">
+                      <apex:outputLabel value="5営業日" />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <apex:repeat value="{!tempList}" var="data">
+                    <tr>
+                      <td class="quoteNumber">
+                        <apex:outputText value="{!data.Name}" />
+                      </td>
+                      <td class="quoteNumber" bgcolor="{!data.newBkColor}">
+                        <apex:outputText value="{!data.newCnt}" />
+                      </td>
+                      <td class="quoteNumber" bgcolor="{!data.continuationBkColor}">
+                        <apex:outputText value="{!data.continuationCnt}" />
+                      </td>
+                      <td class="quoteNumber" bgcolor="{!data.day5AlertBkColor}">
+                        <apex:outputText value="{!data.day5AlertCnt}" />
+                      </td>
+                    </tr>
+                  </apex:repeat>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+    </apex:form>
+  </body>    
+</apex:page>

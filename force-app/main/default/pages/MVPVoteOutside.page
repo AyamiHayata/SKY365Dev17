@@ -1,0 +1,45 @@
+<apex:page showHeader="true" lightningStylesheets="true">
+  <head>
+    <title>MVP投票期間外</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <style>
+    .wrap{
+    width: 100%;
+    box-sizing: border-box;
+    padding:100px;
+  }
+  table {
+    width: 100%;
+  }
+  td {
+    text-align: center;
+    vertical-align:top;
+  }
+  textarea{
+      width: 500px;
+      height: 100px;
+  }     
+  body {
+    background-image: url(/resource/1673936692000/aozora);
+    background-repeat: repeat;
+    background-size: 100%;
+    }
+  </style>
+    <script type="text/javascript">
+      // 初期表示
+      $(document).ready(function(){
+        $('[id$=mlktp]').hide();
+      });      
+    </script>
+  </head>
+  <body>
+    <apex:pageMessages />    
+    <p class="wrap" style="text-align:center;"><font size="7">MVP投票</font></p>
+    <p style="text-align:center;"><font size="5">現在は投票期間外です。次回の投票期間は以下をご確認ください。</font></p>
+    <p style="text-align:center;">&nbsp;</p>
+    <p style="text-align:center;">&nbsp;</p>
+    <table>
+        <tr><td><apex:image url="{!$Resource.mvpvote}"/></td></tr>
+    </table> 
+  </body>
+</apex:page>

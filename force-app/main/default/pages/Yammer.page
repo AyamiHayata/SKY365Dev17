@@ -1,0 +1,12 @@
+<apex:page >
+<div id="embedded-feed" style="height:590px;width:750px;"></div>
+<script type="text/javascript" src="https://s0-azure.assets-yammer.com/assets/platform_embed.js"></script>
+<script type="text/javascript">
+yam.connect.embedFeed({
+  container: "#embedded-feed",
+  network: "sky365.co.jp",
+  feedType: "group",
+  feedId: "12159717"
+});
+</script>
+</apex:page>

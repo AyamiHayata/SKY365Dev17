@@ -1,0 +1,40 @@
+<apex:component >
+  <apex:attribute name="headerInfo" description="請求書帳票ヘッダ情報" type="BillingHeader__c" required="true"/>
+  <apex:attribute name="maxPage" description="最大ページ" type="Integer" required="false"/>
+  <apex:attribute name="curPage" description="現在ページ" type="Integer" required="false"/>
+  <div>
+    <table class="non-border" cols='4'>
+      <thead>
+        <tr>
+          <th width="30%"></th>
+          <th width="40%"></th>
+          <th width="10%"></th>
+          <th width="20%"></th>
+        </tr>
+      </thead>
+      <tr>
+        <td>{!curPage}/{!maxPage}</td>
+        <td class="title" rowspan="2">{!$Label.BILLING_PDF_TITLE}</td>
+        <td>{!$ObjectType.BillingHeader__c.Fields.BillingNumber__c.Label}：</td>
+        <td>{!headerInfo.BillingNumber__c}</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>{!$Label.BILLING_PDF_OUTPUT_DATE}</td>
+        <td>
+          <apex:outputText value="{0,date, yyyy}年{0,date, MM}月{0,date, dd}日" >
+            <apex:param value="{!headerInfo.InvoiceOutputDate__c}"/>
+          </apex:outputText>
+        </td>
+      </tr>
+      <!-- 請求書レイアウト改修 2023/7/19 kikuchi -->
+      <tr>
+        <td></td>
+        <td></td>
+        <td>登録番号：</td>
+        <td>{!$Label.INVOICE_NO}</td>
+      </tr>
+      <!-- 請求書レイアウト改修 2023/7/19 kikuchi -->      
+    </table>
+  </div>
+</apex:component>

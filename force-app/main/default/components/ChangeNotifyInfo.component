@@ -1,0 +1,304 @@
+<apex:component >
+  <apex:attribute name="companyName" description="会社名" type="String" required="true"/>
+  <apex:attribute name="constitutionInfo" description="案件情報" type="Constitution_Common__c" required="true"/>
+  <apex:attribute name="notifyInfo" description="連絡先情報" type="NotifyInfo__c" required="true"/>
+  <apex:attribute name="dayMap" description="営業曜日マップ" type="map" required="true"/>
+  <apex:attribute name="operatorFlg" description="オペレータフラグ" type="boolean" required="true"/>
+  
+  <div class="row">
+    <div class="col-lg-12 col-md-12" style="padding: 1rem;">
+      <h3 class="text-left">お客様のご連絡先</h3>
+        <table class="table table-bordered text-center align-middle mb-1" style="background-color:#fff">
+          <tr>
+            <th class="w-25 fw-bold">会社名</th>
+            <td class="w-75 text-start">
+              <apex:outputText value="{!companyName}" />
+            </td>
+          </tr>
+        </table>
+        <table class="table table-bordered text-center align-middle" style="background-color:#fff;margin-bottom: 0.1rem;">
+          <tr class="border-top-5">
+            <th class="w-25 fw-bold">案件名</th>
+            <td class="w-75 text-start">
+              <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+                <apex:inputField value="{!notifyInfo.ConstitutionCommon__c}" styleclass="border rounded "/>
+              </apex:outputPanel>
+              <apex:outputPanel rendered="{!IF(operatorFlg, false, true)}">
+                <apex:outputField value="{!constitutionInfo.name}" />
+              </apex:outputPanel>
+            </td>
+          </tr>
+        </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12 col-md-12" style="padding: 1rem;">
+      <h3 class="text-left">配布リスト</h3>
+      <p>
+        <table class="table table-bordered text-center align-middle" style="background-color:#fff">
+          <tr>
+            <th class="w-25 fw-bold">アラートの配布リスト</th>
+            <td class="w-75 text-start">
+              <apex:outputPanel rendered="{!IF(operatorFlg, false, true)}">
+                <apex:outputField value="{!notifyInfo.SendListAlert__c}" />
+              </apex:outputPanel>
+              <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+                <apex:inputField styleclass="border rounded container-fluid p-0 ps-1" value="{!notifyInfo.SendListAlert__c}" />
+              </apex:outputPanel>
+            </td>
+          </tr>
+        </table>
+        <table class="table table-bordered text-center align-middle" style="background-color:#fff">
+          <tr>
+            <th class="w-25 fw-bold">アラート以外の配布リスト</th>
+            <td class="w-75 text-start">
+              <apex:outputPanel rendered="{!IF(operatorFlg, false, true)}">
+                <apex:outputField value="{!notifyInfo.SendListAlertExpet__c}" />
+              </apex:outputPanel>
+              <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+                <apex:inputField styleclass="border rounded container-fluid p-0 ps-1" value="{!notifyInfo.SendListAlertExpet__c}" />
+              </apex:outputPanel>
+            </td>
+          </tr>
+        </table>
+      </p>
+    </div>
+  </div>
+    <div class="row">
+      <div class="col-lg-12 col-md-12" style="padding: 1rem;background-color: #ddd;">
+        <h3 class="text-left">お電話でのご連絡先</h3>
+        <p>緊急対応を要する障害が発生した際には、メールでのご連絡後にお電話でもご連絡します。ご連絡先を記載ください。</p>
+        <p>■貴社の営業曜日・時間</p>
+        <table class="table table-bordered align-middle" style="background-color:#fff">
+          <tbody>
+          <tr>
+            <th scope="row" class="text-center">曜日</th>
+            <td>
+              <div class="list-group list-group-horizontal-xl border-0">
+                <label class="list-group-item border-0" style="font-size: 1em;">
+                  <apex:inputCheckbox value="{!dayMap['月']}" />
+                  月
+                </label>
+                <label class="list-group-item border-0" style="font-size: 1em;">
+                  <apex:inputCheckbox value="{!dayMap['火']}" />
+                  火
+                </label>
+                <label class="list-group-item border-0" style="font-size: 1em;">
+                  <apex:inputCheckbox value="{!dayMap['水']}" />
+                  水
+                </label>
+                <label class="list-group-item border-0" style="font-size: 1em;">
+                  <apex:inputCheckbox value="{!dayMap['木']}" />
+                  木
+                </label>
+                <label class="list-group-item border-0" style="font-size: 1em;">
+                  <apex:inputCheckbox value="{!dayMap['金']}" />
+                  金
+                </label>
+                <label class="list-group-item border-0" style="font-size: 1em;">
+                  <apex:inputCheckbox value="{!dayMap['土']}" />
+                  土
+                </label>
+                <label class="list-group-item border-0" style="font-size: 1em;">
+                  <apex:inputCheckbox value="{!dayMap['日']}" />
+                  日
+                </label>
+                <label class="list-group-item border-0" style="font-size: 1em;">
+                  <apex:inputCheckbox value="{!dayMap['祝']}" />
+                  祝
+                </label>
+              </div>
+           </td>
+          </tr>
+          <tr>
+            <th scope="row" class="text-center">時間</th>
+            <td>
+              <div class="list-group list-group-horizontal-xl border-0">
+                <label class="list-group-item border-0">
+                  <apex:inputField type="time" styleclass="form-control form-control-lg" value="{!notifyInfo.BusinessHoursSt__c}" ignoreEditPermissionForRendering="true" id="starttime" showDatePicker="time"/>
+                </label>
+                <label class="list-group-item border-0">
+                  〜
+                </label>
+                <label class="list-group-item border-0">
+                  <apex:inputField type="time" styleclass="form-control form-control-lg" value="{!notifyInfo.BusinessHoursEd__c}" ignoreEditPermissionForRendering="true" id="endtime" showDatePicker="time" />
+                </label>
+              </div>
+           </td>
+          </tr>
+          </tbody>
+        </table>
+        <p>■営業時間中のお電話</p>
+        <table class="table table-bordered text-center" style="background-color:#fff" id="onTimeTable">
+          <tbody>
+          <tr id="headerOnTime">
+            <th class="text-center">削除</th>
+            <th class="text-center">連絡順</th>
+            <th class="text-center">お名前</th>
+            <th class="text-center">ふりがな</th>
+            <th class="text-center">会社名</th>
+            <th class="text-center">お電話番号</th>
+          </tr>
+          <tr id="1">
+            <td>
+              <apex:inputField value="{!notifyInfo.In1_Del__c}" id="on_display_del1" styleclass="form-check-input" ignoreEditPermissionForRendering="true" />
+            </td>
+            <td>
+              1
+              <input type="hidden" name="on_display_order1" id="on_display_order1" value="1" />
+              <input type="button" value="上" onclick="moveUpOnTime(this,'on_display_order')" />
+              <input type="button" value="下" onclick="moveDownOnTime(this,'on_display_order')" />
+            </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.In1_Name__c}" id="on_display_name1" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+           <td>
+              <apex:inputField value="{!notifyInfo.In1_Kana__c}" id="on_display_kana1" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.In1_Company__c}" id="on_display_company1" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.In1_Tel__c}" id="on_display_tel1" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+          </tr>
+          <tr id="2">
+            <td>
+              <apex:inputField value="{!notifyInfo.In2_Del__c}" id="on_display_del2" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+            </td>
+            <td>
+              2
+              <input type="hidden" name="on_display_order2" id="on_display_order2" value="2" />
+              <input type="button" value="上" onclick="moveUpOnTime(this,'on_display_order')" />
+              <input type="button" value="下" onclick="moveDownOnTime(this,'on_display_order')" />
+            </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.In2_Name__c}" id="on_display_name2" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+           <td>
+              <apex:inputField value="{!notifyInfo.In2_Kana__c}" id="on_display_kana2" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.In2_Company__c}" id="on_display_company2" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.In2_Tel__c}" id="on_display_tel2" styleclass="border rounded container-fluid p-0 ps-1 validate[custom[phone]]" ignoreEditPermissionForRendering="true" />
+           </td>
+          </tr>
+          <tr id="3">
+            <td>
+              <apex:inputField value="{!notifyInfo.In3_Del__c}" id="on_display_del3" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+            </td>
+            <td>
+              3
+              <input type="hidden" name="on_display_order3" id="on_display_order3" value="3" />
+              <input type="button" value="上" onclick="moveUpOnTime(this,'on_display_order')" />
+              <input type="button" value="下" onclick="moveDownOnTime(this,'on_display_order')" />
+            </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.In3_Name__c}" id="on_display_name3" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+           <td>
+              <apex:inputField value="{!notifyInfo.In3_Kana__c}" id="on_display_kana3" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.In3_Company__c}" id="on_display_company3" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.In3_Tel__c}" id="on_display_tel3" styleclass="border rounded container-fluid p-0 ps-1 validate[custom[phone]]" ignoreEditPermissionForRendering="true"/>
+           </td>
+          </tr>
+          </tbody>
+        </table>
+        <p>■営業時間外のお電話</p>
+        <table class="table table-bordered text-center" style="background-color:#fff">
+          <tbody>
+            <tr id="headerOffTime">
+            <th>削除</th>
+            <th>連絡順</th>
+            <th>お名前</th>
+            <th>ふりがな</th>
+            <th>会社名</th>
+            <th>お電話番号</th>
+          </tr>
+          <tr id="11">
+            <td>
+              <apex:inputField value="{!notifyInfo.Out1_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+            </td>
+            <td>
+              1
+              <input type="hidden" name="off_display_order1" id="off_display_order1" value="1" />
+              <input type="button" value="上" onclick="moveUpOnTime(this,'off_display_order')" />
+              <input type="button" value="下" onclick="moveDownOnTime(this,'off_display_order')" />
+            </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.Out1_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+           <td>
+              <apex:inputField value="{!notifyInfo.Out1_Kana__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.Out1_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.Out1_Tel__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+          </tr>
+          <tr id="22">
+            <td>
+              <apex:inputField value="{!notifyInfo.Out2_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+           </td>
+            <td>
+              2
+              <input type="hidden" name="off_display_order2" id="off_display_order2" value="2" />
+              <input type="button" value="上" onclick="moveUpOnTime(this,'off_display_order')" />
+              <input type="button" value="下" onclick="moveDownOnTime(this,'off_display_order')" />
+            </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.Out2_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+           <td>
+              <apex:inputField value="{!notifyInfo.Out2_Kana__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.Out2_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.Out2_Tel__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+          </tr>
+          <tr id="33">
+            <td>
+              <apex:inputField value="{!notifyInfo.Out3_Del__c}" styleclass="form-check-input" ignoreEditPermissionForRendering="true"/>
+           </td>
+            <td>
+              3
+              <input type="hidden" name="off_display_order3" id="off_display_order3" value="3" />
+              <input type="button" value="上" onclick="moveUpOnTime(this,'off_display_order')" />
+              <input type="button" value="下" onclick="moveDownOnTime(this,'off_display_order')" />
+            </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.Out3_Name__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+            </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.Out3_Kana__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+            </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.Out3_Company__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+            </td>
+            <td>
+              <apex:inputField value="{!notifyInfo.Out3_Tel__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+           </td>
+          </tr>
+          </tbody>
+        </table>
+        <p>連絡先を2巡しても、どなたにもお電話がつながらかなった場合の対応</p>
+        <apex:outputPanel rendered="{!IF(operatorFlg, true, false)}">
+          <apex:inputField value="{!notifyInfo.Exception__c}" styleclass="border rounded container-fluid p-0 ps-1" ignoreEditPermissionForRendering="true"/>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!IF(operatorFlg, false, true)}" layout="block" style="border:1px solid #cac8c8;padding:2px;background-color:white">
+          <apex:outputField value="{!notifyInfo.Exception__c}" styleclass="border rounded container-fluid p-0 ps-1" />
+        </apex:outputPanel>
+      </div>
+    </div>
+</apex:component>

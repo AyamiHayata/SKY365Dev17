@@ -1,0 +1,8 @@
+<apex:page controller="SalesforceToYammerController" action="{!initAction}" showHeader="true" lightningStylesheets="true">
+    <apex:form >
+        <table>
+            <tr><td><apex:image url="{!$Resource.yammserimg}"/></td></tr>
+            <tr><td align="center"><apex:commandButton action="{!back}" value="戻る" id="back"/></td></tr>
+        </table>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,3 @@
+<apex:page >
+<iframe height="600px" id="theIframe" name="theIframe" src="https://chatbotui.sky365.co.jp/ja" width="100%"></iframe>
+</apex:page>

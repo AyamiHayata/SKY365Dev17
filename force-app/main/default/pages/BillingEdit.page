@@ -1,0 +1,171 @@
+<apex:page standardController="Billing__c" extensions="BillingEditController" lightningStylesheets="true" action="{!initAction}">
+
+  <apex:includeScript value="{!URLFOR($Resource.jquery)}"/>
+
+  <style>
+  .cmnTbl {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .noteDiv {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  .yScroll {
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+  .width-50 {
+    width: 50px;
+  }
+  .width-70 {
+    width: 70px;
+  }
+  .width-90 {
+    width: 90px;
+  }
+  .width-140 {
+    width: 140px;
+  }
+  .dateFormat {
+    display: none;
+  }
+  </style>
+
+  <script>
+  // ダブルクリック防止
+  var isSave = false;
+  function check(){
+    if (!isSave) {
+        isSave = true;
+        return true;
+    }
+    return false;
+  }   
+  </script>
+
+  <apex:form id="main">
+
+    <apex:sectionHeader title="請求編集"/>
+
+    <apex:pageMessages />
+      
+    <apex:pageBlock mode="edit" id="quoteBlock">
+
+      <apex:pageBlockButtons location="bottom">
+        <apex:commandButton value="保存" action="{!saveAction}" onclick="return check();"/>
+        <apex:commandButton value="キャンセル" action="{!cancel}" immediate="true"/>
+      </apex:pageBlockButtons>
+
+      <apex:pageBlockSection title="基本情報" columns="2">
+        <apex:inputField value="{!billing.Name}"/>
+        <apex:inputField value="{!billing.Account__c}"/>
+        <apex:inputField value="{!billing.BillingHeader__c}"/>
+        <apex:inputField value="{!billing.Constitution_Common__c}"/>
+        <apex:inputField value="{!billing.Contract__c}"/>
+        <apex:inputField value="{!billing.Remarks__c}"/>
+        <apex:pageBlockSectionItem />
+      </apex:pageBlockSection>
+
+      <apex:pageBlockSection columns="1" id="detailBlockSection">
+        <apex:outputPanel id="detailInfo">
+          <apex:actionRegion >
+            <table class="cmnTbl">
+              <tr>
+                <td colspan="7">
+                  <apex:commandButton value="追加" action="{!addDetail}" reRender="detailInfo"/>
+                  <apex:commandButton value="削除" action="{!delDetail}" reRender="detailInfo"/>
+                  <apex:commandButton value="再計算" action="{!reCalcAction}" reRender="detailInfo"/>
+                </td>
+              </tr>
+              <tr style="font-weight:bold; background-color:#e7e5e5fd;">
+                <td style="font-weight:normal; text-align:left; vertical-align:bottom;">請求明細</td>
+
+                <td style="font-weight:bold; text-align:right; vertical-align:bottom;">合計金額（税抜）</td>
+                <td style="text-align:left; vertical-align:bottom;">
+                  <apex:outputText value="{0,number,###,###,###}">
+                    <apex:param value="{!totalContractAmount}"/>
+                  </apex:outputText>円
+                </td>
+                <td style="text-align:right; vertical-align:bottom;">消費税額（10%）</td>
+                <td style="text-align:left; vertical-align:bottom;">
+                  <apex:outputText value="{0,number,###,###,###}">
+                    <apex:param value="{!totalTaxAmount}"/>
+                  </apex:outputText>円
+                </td>
+                <td style="text-align:right; vertical-align:bottom;">合計金額（税込）</td>
+                <td style="text-align:left; vertical-align:bottom;">
+                  <apex:outputText value="{0,number,###,###,###}">
+                    <apex:param value="{!totalAmountIncludingTax}"/>
+                  </apex:outputText>円</td>
+                  
+              </tr>
+            </table>
+            <apex:variable value="0" var="rowIndex" />
+            <apex:pageBlockTable value="{!details}" var="detailInner" id="detailTbl">
+              <apex:column >
+                <apex:facet name="header"></apex:facet>
+                <apex:inputCheckbox value="{!detailInner.isSelected}" style="margin-top:7px;"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.BillingDetail__c.Fields.No__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.No__c}" styleClass="width-50"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.BillingDetail__c.Fields.LargeType__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.LargeType__c}"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.BillingDetail__c.Fields.ProductName__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.ProductNameText__c}" style="width:300px;"/>
+                <apex:inputField value="{!detailInner.detail.ProductName__c}" onchange="setProduct({!rowIndex});" style="width:0px;"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.BillingDetail__c.Fields.DetailType__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.DetailType__c}"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.BillingDetail__c.Fields.UnitPrice__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.UnitPrice__c}" id="unitPrice" styleClass="width-90" onchange="changePriceQuantity({!rowIndex});"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.BillingDetail__c.Fields.Quantity__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.Quantity__c}" id="quantity" styleClass="width-70" onchange="changePriceQuantity({!rowIndex});"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.BillingDetail__c.Fields.Unit__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.Unit__c}" styleClass="width-70"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.BillingDetail__c.Fields.Amount__c.Label}</apex:facet>
+                <apex:outputField value="{!detailInner.detail.Amount__c}"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.BillingDetail__c.Fields.TaxType__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.TaxType__c}" onchange="changePriceQuantity({!rowIndex});"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.BillingDetail__c.Fields.TaxPrice__c.Label}</apex:facet>
+                <apex:outputField value="{!detailInner.detail.TaxPrice__c}"/>
+              </apex:column>
+              <apex:column >
+                <apex:facet name="header">{!$ObjectType.BillingDetail__c.Fields.Remarks__c.Label}</apex:facet>
+                <apex:inputField value="{!detailInner.detail.Remarks__c}" style="width:130px;"/>
+                <apex:variable var="rowIndex" value="{!VALUE(rowIndex) + 1}" />
+              </apex:column>
+            </apex:pageBlockTable>
+            <apex:actionFunction name="setProduct" action="{!changeProduct}" reRender="detailBlockSection,noteArea">
+              <apex:param name="firstParam" assignTo="{!targetIndex}" value=""/>
+            </apex:actionFunction>
+            <apex:actionFunction name="changePriceQuantity" action="{!changePrice}" reRender="detailBlockSection,noteArea">
+              <apex:param name="firstParam" assignTo="{!targetIndex}" value=""/>
+            </apex:actionFunction>
+          </apex:actionRegion>
+        </apex:outputPanel>
+      </apex:pageBlockSection>
+      
+    </apex:pageBlock>
+
+  </apex:form>
+
+</apex:page>

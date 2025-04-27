@@ -1,0 +1,521 @@
+<apex:page docType="html-5.0" applyBodyTag="false" showHeader="false" sidebar="false" id="Page" standardStylesheets="false" controller="ZabbixReportController" action="{!initAction}" cache="false" deferLastCommandUntilReady="true">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"></meta>
+    <title>リソースレポート</title>
+    <c:CoodleHeadInfo />
+    <style>
+      .arrow_r, .arrow_l, .arrow_rr, .arrow_ll {
+        color: #333;
+      }
+      
+      .scrollable-row {
+        overflow-x: auto; /* 横スクロールを有効にする */
+        white-space: nowrap; /* グラフが水平に続くように */
+      }
+      .graph-container {
+        display: inline-block; /* グラフを横に並べるため */
+        width: auto; /* 自動で幅を設定 */
+        padding: 10px; /* グラフ間のスペース */
+        vertical-align: top; /* グラフを上部で揃える */
+      }
+      .selectbox{
+        border: 1px black solid;
+        height: 60px;
+        background-color: white;
+      }
+      .selectlist{
+        padding: 0.5rem;
+        border-radius: 0.3rem;
+        min-width: 200px;
+        max-width: 200px;
+        min-height: 130px;
+        border: none;
+        overflow: scroll;
+      }
+      select.selectlist option{
+        padding: 0.3rem;
+      }
+      td.seikanchu {
+        color: red;
+      }
+      .w40{
+        width:40%;
+      }
+      .refresh:hover {
+        filter: brightness(50%);
+        transition-duration: 0.3s;
+      }  
+      div.messageText h4 {
+        display: none;
+      }
+      div.messageText {
+        color:rgb(243 32 32);
+      }
+      p.refreshcurrenttime{
+        display: flex;
+        justify-content: end;
+        align-items: center;
+      }
+      div#modal_xxl{
+        max-width: 1300px;
+      }
+      /* ローディングオーバーレイスタイル */
+      #loadingOverlay {
+        display: none; /* 初期状態で非表示 */
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        width: 100%;
+        height: 100%;
+        align-items: center; /* 中央揃え: 縦 */
+        justify-content: center; /* 中央揃え: 横 */
+        background: rgba(255, 255, 255, 0.8);
+      }
+      /* ローディングアニメーションスタイルを追加 */
+      .loadingSpinner {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+      // 初期表示
+      $(document).ready(function(){                                   
+        var a = $.cookie("BrowserId");
+        $("[id$='sessionid']").val(a);
+        $("[id$='formID']").validationEngine('attach',{promptPosition:"topRight:-40"});
+      });
+      
+    
+    // initAction 完了時のコールバックとして、ページロード時の処理を実行
+      document.addEventListener("DOMContentLoaded", function() {
+        hideLoadingIndicator();
+        // showLoadingIndicator();
+        const filterInput = document.getElementById('filterInput');
+        const optionsList = document.getElementById('Page:formID:candidateAwsList');
+        const originalOptions = Array.from(optionsList.options);
+        const selectAwsList = document.getElementById('Page:formID:selectAwsList');
+        const rlink = document.getElementById('Page:formID:arrow_r_link');
+        const llink = document.getElementById('Page:formID:arrow_l_link');
+        
+        //name="periodkind"のラジオボタンでチェックが入っているものを取得
+        var isPeriodKindSelected = '{!periodkind}';
+        // console.log('isPeriodKindSelected:'+isPeriodKindSelected);
+        var radio = document.getElementById(isPeriodKindSelected);
+        // radioを選択状態にする
+        radio.checked = true;
+        
+        var isInit = '{!initFlg}';
+        console.log('isInit:'+isInit);
+
+        function filterOptions() {
+          const filterText = filterInput.value.toLowerCase();
+          optionsList.innerHTML = ''; // 一度全てのオプションをクリア
+
+          // フィルターに前方一致するオプションだけを追加
+          originalOptions.forEach(option => {
+            const optionText = option.text.toLowerCase();
+            if (optionText.startsWith(filterText)) {
+              optionsList.add(new Option(option.text, option.value)); // オプションをクローンして追加
+            }
+          });
+        }
+
+        function filterClear() {
+          //'Page:formID:filterInput'の値をクリアする
+           var textBox = document.getElementById('Page:formID:filterInput');
+           textBox.value = "";
+        }
+
+        filterInput.addEventListener('keyup', filterOptions);
+
+        function pageLoaded() {
+          // ローディングスピナーを表示
+          showLoadingIndicator();
+          
+          // initAction が完了した後に describeGraphAction を呼び出す
+          describeGraphAction();
+        } 
+        // initAction 完了時のコールバックとして、ページロード時の処理を実行
+        if(isInit=="true"){
+          pageLoaded();
+        }
+   
+      });
+
+
+      function showModal(graphName,graphId,itemidstr,itemnamestr) {
+        // モーダルのタイトル要素を取得
+        var modalTitle = document.getElementById('graphModalLabel');
+        // タイトルにグラフ名を設定
+        modalTitle.textContent = graphName;
+        //　モーダル画像の要素を取得
+        var modalImage = document.getElementById('popup-img');
+        modalImage.src = document.getElementById(graphId).src;
+
+        const itemids = itemidstr.split(',');
+        const itemnames = itemnamestr.split(',');
+
+        // console.log('itemids:'+itemids);
+        // console.log('itemnames:'+itemnames);
+
+        // モーダルフッター内のダウンロードリンクを生成して追加
+        var modalFooter = document.querySelector('.modal-footer');
+        // 既存のリンクをクリア
+        modalFooter.innerHTML = '';
+
+        itemids.forEach((itemId, index) => {
+          var downloadLink = document.createElement('a');
+          downloadLink.href = 'javascript:void(0)'; // URL ではなく JavaScript を呼び出す
+          downloadLink.setAttribute('download', itemnames[index] + '.csv'); // ファイル名をダウンロード属性に設定　
+          downloadLink.textContent = itemnames[index] + ' CSV ダウンロード'; // リンクテキストを適宜設定
+          downloadLink.classList.add('icon-link', 'icon-link-hover', 'text-decoration-none');
+          downloadLink.onclick = function() {
+            console.log('itemId:'+itemId);
+            console.log('itemnames:'+itemnames[index]);
+            console.log('graphId:'+graphId);
+            downloadCSV(itemId,itemnames[index],graphId); // itemId を引数として Apex 関数を呼び出す
+          };
+          // リンクアイコンを追加（オプション）
+          downloadLink.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cloud-arrow-down-fill me-1" viewBox="0 0 16 16">
+              <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2zm2.354 6.854-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 1 1 .708-.708L7.5 9.293V5.5a.5.5 0 0 1 1 0v3.793l1.146-1.147a.5.5 0 0 1 .708.708z"/>
+            </svg>` + downloadLink.textContent;
+    
+            modalFooter.appendChild(downloadLink); // モーダルフッターにリンクを追加
+          });
+
+      }
+
+      // 日時をセットする関数
+      function setDateTime(radioInput) {
+        // 日時入力フィールドを取得
+        var startDateInput = document.getElementById('Page:formID:startdatetime');
+        var endDateInput = document.getElementById('Page:formID:enddatetime');
+
+        // 現在の日時
+        var now = new Date();
+
+        // ラジオボタンに応じた日時を計算
+        switch (radioInput) {
+          case 'last30days':
+            startDateInput.value = formatDate(new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000));
+            break;
+          case 'last3months':
+            startDateInput.value = formatDate(getBeforeMonthDate(3));
+            break;
+          case 'last1year':
+            startDateInput.value = formatDate(getBeforeMonthDate(12));
+            break;
+          case 'last1hour':
+            startDateInput.value = formatDate(new Date(now.getTime() - 1 * 60 * 60 * 1000));
+            break;
+          case 'last3hours':
+            startDateInput.value = formatDate(new Date(now.getTime() - 3 * 60 * 60 * 1000));
+            break;
+          case 'last12hours':
+            startDateInput.value = formatDate(new Date(now.getTime() - 12 * 60 * 60 * 1000));
+            break;
+          case 'last24hours':
+            startDateInput.value = formatDate(new Date(now.getTime() - 24 * 60 * 60 * 1000));
+            break;
+        }
+
+        // 現在の日時を終了日時フィールドにセット
+        endDateInput.value = formatDate(now);
+      }
+      //　◯ヶ月前の日付を取得する関数
+      function getBeforeMonthDate(num) {
+        // 現在の日付を取得
+        let currentDate = new Date();
+        // 現在の年と月を取得
+        let year = currentDate.getFullYear();
+        let month = currentDate.getMonth(); // 注意: 月は0から11までの数値で表される
+        // 3ヶ月前の月を計算
+        month -= num;
+        // 月がマイナスの値になった場合、年を減らす
+        if (month < 0) {
+            year--;         // 年を1減らす
+            month += 12;    // 月を12増やす（マイナスの月を補正する）
+        }
+
+        // 新しい年と月を使用して日付を設定
+        // let numMonthsAgo = new Date(year, month, currentDate.getDate());
+        let numMonthsAgo = new Date(year, month, currentDate.getDate(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds());
+        return numMonthsAgo;
+      }
+      // 日時をYYYY-MM-DDTHH:MM形式にフォーマットする関数
+      function formatDate(date) {
+        var year = date.getFullYear();
+        var month = ('0' + (date.getMonth() + 1)).slice(-2);
+        var day = ('0' + date.getDate()).slice(-2);
+        var hours = ('0' + date.getHours()).slice(-2);
+        var minutes = ('0' + date.getMinutes()).slice(-2);
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+      }
+      // 現在の日付の0時0分の時刻を取得する関数
+      function getMidnightTime() {
+        const now = new Date(); // 現在の日付と時刻を取得
+        const midnight = new Date(
+          now.getFullYear(),  // 現在の年
+          now.getMonth(),     // 現在の月
+          now.getDate(),      // 現在の日
+          0,                  // 時間を0時に設定
+          0,                  // 分を0分に設定
+          0                   // 秒を0秒に設定
+        );
+        return midnight;
+      }
+      function chkdetach() {
+        $("[id$='formID']").validationEngine('detach');
+      }
+      function  searchcheck(){
+        var selectlistarray = [];
+        $("[id$='selectAwsList'] option").each(function() {
+          var v = $(this).val().trim();
+          if (v != null && v != "") {
+            selectlistarray.push(v)
+          }
+        });
+        if(selectlistarray.length > 0){
+          $("[id$='selectAwsList']").val(selectlistarray);
+        }
+
+        var isValid = jQuery("[id$='formID']").validationEngine('validate');
+  
+        // バリデーションが成功した場合のみ、ローディングオーバーレイを表示する
+        if(isValid) {
+          showLoadingIndicator();
+        }
+  
+        // Validation Engineの結果を返します
+        return isValid;
+      }
+      function showLoadingIndicator() {
+        document.getElementById('loadingOverlay').style.display = 'flex';
+      }
+
+      function hideLoadingIndicator() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+      }
+    </script>
+    <div id="loadingOverlay">
+      <div class="loadingSpinner"></div>
+    </div>
+    <apex:form id="formID">
+        <c:CommunityHeader code="{!code}" name="{!name}" selectPage="rreport"/>
+       
+        <apex:inputHidden id="sessionid" value="{!sessionid}" />
+        <apex:actionFunction name="describeGraphAction" action="{!describeGraph}" oncomplete="hideLoadingIndicator();" rerender="graphimgList,pagenationArea"/>
+        
+        <div class="container-fluid p-5" style="background-color:rgb(54, 143, 233);padding: 2rem;">
+          <div class="container m-auto p-5 rounded" style="background-color:#DDDDDD;">
+            <apex:pageMessages />
+            <div class="row">
+              <div class="col-lg-12 col-md-12" style="padding: 1rem;">
+                <h3 class="text-start">案件名：{!constitutionName}</h3>
+                <apex:inputHidden value="{!constitutionid}" />
+                <apex:inputHidden value="{!companyName}" />
+              </div>
+            </div>
+
+            <div  class="row">
+              <div class="col-lg-12 col-md-12" style="padding: 1rem;">
+                <p class="refreshcurrenttime">
+                  <apex:commandButton image="{!$Resource.refresh}" styleclass="refresh" action="{!refresh}" id="btn" reRender="currenttimedisp"></apex:commandButton>
+                  <apex:outputPanel id="currenttimedisp">現在時刻&nbsp;{!currentDateTimeString}</apex:outputPanel>
+                </p>
+              </div>
+            </div>
+            <div class="row p-3 mb-3 border border-dark" id="maintenaceinputinfo">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <p class="text-sm-start fs-5">対象リソース</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <input type="text" id="filterInput" size="20" placeholder="絞り込み..."/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-md-6 mt-2">
+                  <div class="row align-items-start p-0" >
+                    <div class="col w40" >
+                      <apex:inputHidden id="selectedStatus" value="{!selectedStatus}" />
+                      選択可能
+                      <apex:selectList value="{!candidateAwsResources}" multiselect="true" id="candidateAwsList" styleClass="selectlist" style="height: 100px;">
+                        <apex:selectOptions value="{!cawsResources}"/>
+                      </apex:selectList>
+                    </div>
+                    <div class="col text-center">
+                      &nbsp;<br/>
+                      <apex:outputLink value="#" styleClass="arrow_rr" id="arrow_rr_link" disabled="{!IF(selectedStatus=='選択',true,false)}"  onclick="callmoveAllAwsResources()">
+                       <i class="fa-solid fa-angles-right"></i>
+                      </apex:outputLink>
+                      <apex:actionFunction action="{!moveAllAwsResources}" name="callmoveAllAwsResources"/>
+                      <br/>
+                      <apex:outputLink value="#" styleClass="arrow_r" id="arrow_r_link" disabled="{!IF(selectedStatus=='選択',true,false)}"  onclick="callmoveAwsResources()">
+                        <i class="fa fa-angle-right fa-lg" aria-hidden="true"></i>
+                      </apex:outputLink>
+                      <apex:actionFunction action="{!moveAwsResources}" name="callmoveAwsResources" />
+                      <br/>
+                      <apex:outputLink value="#" styleClass="arrow_l" id="arrow_l_link" disabled="{!IF(selectedStatus=='選択',true,false)}"  onclick="callremoveAwsResources()">
+                        <i class="fa fa-angle-left fa-lg" aria-hidden="true"></i>
+                      </apex:outputLink>
+                      <apex:actionFunction action="{!removeAwsResources}" name="callremoveAwsResources"/>
+                      <br/>
+                      <apex:outputLink value="#" styleClass="arrow_l" id="arrow_ll_link" disabled="{!IF(selectedStatus=='選択',true,false)}"  onclick="callremoveAllAwsResources()">
+                        <i class="fa-solid fa-angles-left"></i>
+                      </apex:outputLink>
+                      <apex:actionFunction action="{!removeAllAwsResources}" name="callremoveAllAwsResources"/>
+                    </div>
+                    <div class="col w40">
+                      選択済み
+                      <apex:selectList value="{!selectAwsResources}" multiselect="true" id="selectAwsList" styleClass="selectlist" html-data-validation-engine="validate[required]" style="height: 100px;">
+                        <apex:selectOptions value="{!awsResources}" />
+                      </apex:selectList>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="input-group ms-2 form-check">
+                    <input type="radio" name="periodkind" id="last30days" value="last30days" onclick="setDateTime(this.value)" onchange="setSelectedOption(this.value)" class="me-2" />
+                    <label for="last30days" class="me-3">最新の30日</label>
+                    <input type="radio" name="periodkind" id="last3months" value="last3months" onclick="setDateTime(this.value)" onchange="setSelectedOption(this.value)" class="me-2"/>
+                    <label for="last3months" class="me-3">最新の3ヶ月</label>
+                    <input type="radio" name="periodkind" id="last1year" value="last1year" onclick="setDateTime(this.value)" onchange="setSelectedOption(this.value)" class="me-2"/>
+                    <label for="last1year" class="me-3">最新の1年</label>
+                  </div>
+                  <div class="input-group ms-2 mb-2 form-check">
+                    <input type="radio" name="periodkind" id="last1hour" value="last1hour" onclick="setDateTime(this.value)" onchange="setSelectedOption(this.value)" class="me-2"/>
+                    <label for="last1hour" class="me-3">最新の1時間</label>
+                    <input type="radio" name="periodkind" id="last3hours" value="last3hours" onclick="setDateTime(this.value)" onchange="setSelectedOption(this.value)" class="me-2"/>
+                    <label for="last3hours" class="me-3">最新の3時間</label>
+                    <input type="radio" name="periodkind" id="last12hours" value="last12hours" onclick="setDateTime(this.value)" onchange="setSelectedOption(this.value)" class="me-2"/>
+                    <label for="last12hours" class="me-3">最新の12時間</label>
+                    <input type="radio" name="periodkind" id="last24hours" value="last24hours" onclick="setDateTime(this.value)" onchange="setSelectedOption(this.value)" class="me-2"/>
+                    <label for="last24hours">最新の24時間</label>
+                  </div>
+                  <apex:actionFunction name="setSelectedOption" action="{!periodRadioChanged}" reRender="none">
+                    <apex:param name="selected" value="" assignTo="{!selectedOption}"/>
+                  </apex:actionFunction>
+                  <div class="input-group flex-column ms-2">
+                    <dl class="mt-0 mb-1 mx-2 d-flex flex-row">
+                      <dt class="w-50 p-2 h-75">
+                        開始日時
+                      </dt>
+                      <dd class="w-50 p-2 h-75">
+
+                        <apex:input value="{!reportStartDatetime}" id="startdatetime" type="datetime-local" styleClass="slds-input border rounded container-fluid p-0 ps-1" html-data-validation-engine="validate[required,custom[reportDateTimeRange]]" html-data-datetime-group="daterangeGroup"/>
+                      </dd>
+                    </dl>
+                    <dl class="mt-0 mb-1 mx-2 d-flex flex-row">
+                      <dt class="w-50 p-2 h-75">
+                        終了日時
+                      </dt>
+                      <dd class="w-50 p-2 h-75">
+                        <apex:input value="{!reportEndDatetime}" id="enddatetime" type="datetime-local" styleClass="slds-input border rounded container-fluid p-0 ps-1" html-data-validation-engine="validate[required,custom[reportDateTimeRange]]" html-data-datetime-group="daterangeGroup"/>
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="row justify-content-end">
+                  <div class="col-auto">
+                    <p>
+                      <apex:commandButton action="{!describeGraph}" value="表示" styleClass="btn btn-secondary me-1 px-3" id="search" status="loadingStatus" onclick="searchcheck();" />
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <apex:outputPanel styleClass="row col-xs-12 col-md-6" layout="block" id="pagenationArea">
+                
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-end">
+                      <li class="page-item {!if(currentPage == 1, 'disabled', '')}">
+                        <apex:commandLink action="{!previousPage}" styleClass="page-link" html-aria-label="Previous" onclick="searchcheck();">
+                            <span aria-hidden="true">&laquo;</span>
+                        </apex:commandLink>
+                      </li>
+                      <li class="page-item disabled">
+                        <a class="page-link" href="#">
+                          <apex:outputText value="{!currentPage}" rendered="{!maxPage > 0}"/>
+                        </a>
+                      </li>
+                      <li class="page-item {!if(currentPage == maxPage, 'disabled', '')}">
+                        <apex:commandLink action="{!nextPage}" id="nextPageLink" styleClass="page-link" html-aria-label="Next" onclick="searchcheck();">
+                          <span aria-hidden="true">&raquo;</span>
+                      </apex:commandLink>
+                      </li>
+                    </ul>
+                  </nav>
+              </apex:outputPanel>
+            </div> 
+            <apex:actionRegion >
+              
+              <apex:outputPanel id="graphimgList" layout="block">
+                <div class="col-xs-12 col-sm-12" style="padding: 1rem;background-color: #fff;">
+                  <apex:repeat value="{!monitorReportList}" var="monitorObj">
+                    <div>
+                      <div>
+                        <h4><apex:outputText value="{!monitorObj.hostName}"/></h4>
+                      </div>
+                      <div class="d-flex flex-row scrollable-row">
+                        <apex:repeat value="{!monitorObj.graphList}" var="graphobj"> 
+                          <div class="m-3" style="width: 250px">
+                            <img src="data:image/png;base64,{!graphobj.graphImageEncode}" class="pop" data-bs-toggle="modal" data-bs-target="#graphModal" style="height: 150px;width: 250px" onclick="showModal('{!graphobj.graphName}','{!graphobj.graphid}','{!graphobj.itemIds}','{!graphobj.itemNames}');" id="{!graphobj.graphid}"/>
+                            <br/><apex:outputText value="{!graphobj.graphName}" style="font-size: .8rem;display: block;white-space: pre-line;"/>
+                          </div>
+                        </apex:repeat>
+                      </div>
+                      <hr/>
+                    </div>
+                  </apex:repeat>
+                  <apex:actionFunction name="downloadCSV" action="{!downloadCSV}" reRender="none">
+                    <apex:param name="itemIdParam" value="" assignTo="{!selectedItemId}" />
+                    <apex:param name="itemNameParam" value="" assignTo="{!selectedItemName}" />
+                    <apex:param name="graphIdParam" value="" assignTo="{!selectedGraphId}" />
+                  </apex:actionFunction>
+                </div>
+              </apex:outputPanel>
+            </apex:actionRegion>
+          
+          </div>
+        </div>
+      
+        <!-- Modal -->
+        <div class="modal fade" id="graphModal" tabindex="-1" aria-labelledby="graphModalLabel" aria-hidden="true">
+          <div class="modal-dialog " id="modal_xxl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title fs-5" id="graphModalLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <img id="popup-img" src="" style="width: 100%" />
+              </div>
+              <div class="modal-footer">
+              </div>
+            </div>
+          </div>
+        </div>
+      </apex:form>
+
+  <c:CommunityFooter />
+</body>
+  <script src="{!URLFOR($Resource.jquerycookiemaster, 'src/jquery.cookie.js')}" type="text/javascript"></script> 
+</apex:page>
